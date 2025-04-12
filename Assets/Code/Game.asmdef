@@ -3,9 +3,6 @@
     "rootNamespace": "",
     "references": [
         "Zenject",
-        "DOTweenPro.Scripts",
-        "DOTween.Modules",
-        "Coffee.UIParticle",
         "UniTask",
         "UniTask.DOTween"
     ],

@@ -1,6 +1,5 @@
 ﻿using Code.Infrastructure.Services.PersistenceProgress;
 using Code.Infrastructure.Services.PersistenceProgress.Player;
-using Services.PersistenceProgress.Player;
 
 namespace Services.PersistenceProgress
 {
