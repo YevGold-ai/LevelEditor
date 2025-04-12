@@ -10,6 +10,8 @@ namespace Code.LevelEditor.Editor
 {
     public class BlockLibraryWindow : OdinEditorWindow
     {
+        private enum SortMode { ByID, ByPrefabName, ByIconName }
+
         [MenuItem("Tools/Block Library 🧱")]
         public static void ShowWindow()
         {
@@ -17,39 +19,44 @@ namespace Code.LevelEditor.Editor
             window.minSize = new Vector2(400, 500);
         }
 
-        [BoxGroup("📦 Block Library", centerLabel: true)] 
+        [BoxGroup("📦 Block Library", centerLabel: true)]
         [ReadOnly, ShowInInspector, HideLabel]
         private BlockLibrary _blockLibrary;
 
-        [BoxGroup("🧱 Create Block", centerLabel: true)] 
-        [LabelText("Block ID")] [ShowInInspector]
+        [BoxGroup("🧱 Create Block", centerLabel: true)]
+        [ShowInInspector, LabelText("Block ID")]
         private string _newBlockId = "";
-        [BoxGroup("🧱 Create Block")] 
-        [LabelText("Icon")] [ShowInInspector]
+
+        [BoxGroup("🧱 Create Block")]
+        [ShowInInspector, LabelText("Icon")]
         private Sprite _newBlockSprite;
-        [BoxGroup("🧱 Create Block")] 
-        [LabelText("Prefab")] [ShowInInspector]
+
+        [BoxGroup("🧱 Create Block")]
+        [ShowInInspector, LabelText("Prefab")]
         private GameObject _newBlockPrefab;
 
-        [BoxGroup("🔍 Search & Sort", centerLabel: true)] 
-        [LabelText("Filter")] [ShowInInspector]
+        [BoxGroup("🔍 Search & Sort", centerLabel: true)]
+        [ShowInInspector, LabelText("Filter")]
         private string _searchFilter = "";
+
         [BoxGroup("🔍 Search & Sort")]
         [HorizontalGroup("🔍 Search & Sort/SortRow")]
-        [EnumToggleButtons, HideLabel]
-        [PropertyOrder(0)]
+        [EnumToggleButtons, HideLabel, PropertyOrder(0)]
         [SerializeField]
         private SortMode _sortMode = SortMode.ByID;
+
+        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
+        [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
+        [PropertyOrder(1)]
+        private void ToggleSortDirection() => _sortAscending = !_sortAscending;
 
         private bool _sortAscending = true;
         private Vector2 _scroll;
 
-        private enum SortMode
-        {
-            ByID,
-            ByPrefabName,
-            ByIconName
-        }
+        [BoxGroup("🧾 Selected Block", centerLabel: true)]
+        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+        [PropertyOrder(100)]
+        private BlockDataEditor _selectedBlock;
 
         protected override void OnEnable()
         {
@@ -68,7 +75,6 @@ namespace Code.LevelEditor.Editor
                 {
                     CreateLibrary();
                 }
-
                 return;
             }
 
@@ -78,19 +84,21 @@ namespace Code.LevelEditor.Editor
             SirenixEditorGUI.BeginBoxHeader();
             SirenixEditorGUI.Title("📦 Existing Blocks", null, TextAlignment.Center, true);
             SirenixEditorGUI.EndBoxHeader();
+
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             DrawExistingBlocks();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndScrollView();
+
             SirenixEditorGUI.EndBox();
         }
 
         private void LoadOrCreateLibrary()
         {
-            string[] guids = AssetDatabase.FindAssets("t:BlockLibrary");
+            var guids = AssetDatabase.FindAssets("t:BlockLibrary");
             if (guids.Length > 0)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                var path = AssetDatabase.GUIDToAssetPath(guids[0]);
                 _blockLibrary = AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
             }
             else
@@ -102,24 +110,17 @@ namespace Code.LevelEditor.Editor
         private void CreateLibrary()
         {
             var asset = CreateInstance<BlockLibrary>();
-            string folderPath = "Assets/Resources/StaticData/BlocksData";
+            const string folderPath = "Assets/Resources/StaticData/BlocksData";
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder("Assets/Resources/StaticData", "BlocksData");
 
-            string path = $"{folderPath}/BlockLibrary.asset";
+            var path = $"{folderPath}/BlockLibrary.asset";
             AssetDatabase.CreateAsset(asset, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
             _blockLibrary = asset;
             Debug.Log("✅ BlockLibrary created at " + path);
-        }
-
-        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
-        [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
-        [PropertyOrder(1)]
-        private void ToggleSortDirection()
-        {
-            _sortAscending = !_sortAscending;
         }
 
         private void DrawExistingBlocks()
@@ -137,18 +138,12 @@ namespace Code.LevelEditor.Editor
                 blocks = blocks.FindAll(b => b != null && b.ID.ToLower().Contains(_searchFilter.ToLower()));
             }
 
-            blocks.Sort((a, b) =>
+            blocks.Sort((a, b) => _sortMode switch
             {
-                switch (_sortMode)
-                {
-                    case SortMode.ByID: return string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase);
-                    case SortMode.ByIconName:
-                        return string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "",
-                            StringComparison.OrdinalIgnoreCase);
-                    case SortMode.ByPrefabName:
-                        return SafeCompare(a.Prefab, b.Prefab);
-                    default: return 0;
-                }
+                SortMode.ByID => string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase),
+                SortMode.ByIconName => string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "", StringComparison.OrdinalIgnoreCase),
+                SortMode.ByPrefabName => SafeCompare(a.Prefab, b.Prefab),
+                _ => 0
             });
 
             if (!_sortAscending)
@@ -164,24 +159,23 @@ namespace Code.LevelEditor.Editor
                 SirenixEditorGUI.EndBoxHeader();
 
                 GUILayout.BeginHorizontal();
-
-                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32),
-                    GUILayout.Height(32));
-
+                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("Select", GUILayout.Width(60)))
+                {
+                    _selectedBlock = block;
                     Selection.activeObject = block;
+                }
 
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?",
-                            "Yes", "No"))
+                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?", "Yes", "No"))
                     {
-                        string path = AssetDatabase.GetAssetPath(block);
+                        var path = AssetDatabase.GetAssetPath(block);
                         _blockLibrary.AllBlocks.Remove(block);
-                        EditorUtility.SetDirty(_blockLibrary);
                         AssetDatabase.DeleteAsset(path);
+                        EditorUtility.SetDirty(_blockLibrary);
                         AssetDatabase.SaveAssets();
                         AssetDatabase.Refresh();
                         GUIUtility.ExitGUI();
@@ -199,17 +193,17 @@ namespace Code.LevelEditor.Editor
         [EnableIf("@!string.IsNullOrEmpty(_newBlockId) && _newBlockSprite != null")]
         private void CreateNewBlock()
         {
-            var folderPath = "Assets/Resources/StaticData/BlocksData";
+            const string folderPath = "Assets/Resources/StaticData/BlocksData";
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder("Assets/Resources/StaticData", "BlocksData");
 
-            BlockDataEditor newBlock = CreateInstance<BlockDataEditor>();
+            var newBlock = CreateInstance<BlockDataEditor>();
             newBlock.name = _newBlockId;
             newBlock.SetID(_newBlockId);
             newBlock.SetIcon(_newBlockSprite);
             newBlock.SetPrefab(_newBlockPrefab);
 
-            string assetPath = $"{folderPath}/{_newBlockId}.asset";
+            var assetPath = $"{folderPath}/{_newBlockId}.asset";
             AssetDatabase.CreateAsset(newBlock, assetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -223,14 +217,12 @@ namespace Code.LevelEditor.Editor
             _newBlockSprite = null;
             _newBlockPrefab = null;
         }
-        
+
         private int SafeCompare(UnityEngine.Object a, UnityEngine.Object b)
         {
             try
             {
-                string nameA = a != null ? a.name : string.Empty;
-                string nameB = b != null ? b.name : string.Empty;
-                return string.Compare(nameA, nameB, StringComparison.OrdinalIgnoreCase);
+                return string.Compare(a?.name ?? string.Empty, b?.name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
             }
             catch
             {
