@@ -10,7 +10,12 @@ namespace Code.LevelEditor.Editor
 {
     public class BlockLibraryWindow : OdinEditorWindow
     {
-        private enum SortMode { ByID, ByPrefabName, ByIconName }
+        private enum SortMode
+        {
+            ByID,
+            ByPrefabName,
+            ByIconName
+        }
 
         [MenuItem("Tools/Block Library 🧱")]
         public static void ShowWindow()
@@ -19,29 +24,24 @@ namespace Code.LevelEditor.Editor
             window.minSize = new Vector2(400, 500);
         }
 
-        [BoxGroup("📦 Block Library", centerLabel: true)]
-        [ReadOnly, ShowInInspector, HideLabel]
+        [BoxGroup("📦 Block Library", centerLabel: true)] [ReadOnly, ShowInInspector, HideLabel]
         private BlockLibrary _blockLibrary;
         
-        [BoxGroup("🧱 Create Block", centerLabel: true)]
-        [ShowInInspector, LabelText("Block ID")]
+        [BoxGroup("🧱 Create Block", centerLabel: true)] [ShowInInspector, LabelText("Block ID")]
         private string _newBlockId = "";
-        [BoxGroup("🧱 Create Block")]
-        [ShowInInspector, LabelText("Icon")]
+        [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Icon")]
         private Sprite _newBlockSprite;
-        [BoxGroup("🧱 Create Block")]
-        [ShowInInspector, LabelText("Prefab")]
+        [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Prefab")]
         private GameObject _newBlockPrefab;
-        
-        [BoxGroup("🔍 Search & Sort", centerLabel: true)]
-        [ShowInInspector, LabelText("Filter")]
+
+        [BoxGroup("🔍 Search & Sort", centerLabel: true)] [ShowInInspector, LabelText("Filter")]
         private string _searchFilter = "";
         [BoxGroup("🔍 Search & Sort")]
         [HorizontalGroup("🔍 Search & Sort/SortRow")]
         [EnumToggleButtons, HideLabel, PropertyOrder(0)]
         [SerializeField]
         private SortMode _sortMode = SortMode.ByID;
-        
+
         private BlockDataEditor _selectedBlock;
         private BlockEditorDTO _blockDraft = new BlockEditorDTO();
         private bool _sortAscending = true;
@@ -64,6 +64,7 @@ namespace Code.LevelEditor.Editor
                 {
                     CreateLibrary();
                 }
+
                 return;
             }
 
@@ -72,7 +73,7 @@ namespace Code.LevelEditor.Editor
             DrawExistingBlocks();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndScrollView();
-            
+
             GUILayout.Space(10);
             DrawSelectedBlockSection();
         }
@@ -121,7 +122,8 @@ namespace Code.LevelEditor.Editor
             else
             {
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.Label(_selectedBlock.Icon != null ? _selectedBlock.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
+                GUILayout.Label(_selectedBlock.Icon != null ? _selectedBlock.Icon.texture : Texture2D.grayTexture,
+                    GUILayout.Width(32), GUILayout.Height(32));
                 GUILayout.Label(_selectedBlock.ID, SirenixGUIStyles.BoldLabel);
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
@@ -131,7 +133,8 @@ namespace Code.LevelEditor.Editor
                 // Поля редактирования DTO
                 _blockDraft.Id = EditorGUILayout.TextField("ID", _blockDraft.Id);
                 _blockDraft.Icon = (Sprite)EditorGUILayout.ObjectField("Icon", _blockDraft.Icon, typeof(Sprite), false);
-                _blockDraft.Prefab = (GameObject)EditorGUILayout.ObjectField("Prefab", _blockDraft.Prefab, typeof(GameObject), false);
+                _blockDraft.Prefab =
+                    (GameObject)EditorGUILayout.ObjectField("Prefab", _blockDraft.Prefab, typeof(GameObject), false);
 
                 GUILayout.Space(4);
 
@@ -148,12 +151,18 @@ namespace Code.LevelEditor.Editor
         [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
         [PropertyOrder(1)]
         private void ToggleSortDirection() => _sortAscending = !_sortAscending;
-        
+
         private void DrawExistingBlocks()
         {
+            SirenixEditorGUI.BeginBox();
+            SirenixEditorGUI.BeginBoxHeader();
+            SirenixEditorGUI.Title("📦 Existing Blocks", null, TextAlignment.Center, true);
+            SirenixEditorGUI.EndBoxHeader();
+
             if (_blockLibrary.AllBlocks == null || _blockLibrary.AllBlocks.Count == 0)
             {
                 SirenixEditorGUI.InfoMessageBox("No blocks found.");
+                SirenixEditorGUI.EndBox(); // не забываем закрыть
                 return;
             }
 
@@ -169,7 +178,8 @@ namespace Code.LevelEditor.Editor
                 return _sortMode switch
                 {
                     SortMode.ByID => string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase),
-                    SortMode.ByIconName => string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "", StringComparison.OrdinalIgnoreCase),
+                    SortMode.ByIconName => string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "",
+                        StringComparison.OrdinalIgnoreCase),
                     SortMode.ByPrefabName => SafeCompare(a.Prefab, b.Prefab),
                     _ => 0
                 };
@@ -189,15 +199,20 @@ namespace Code.LevelEditor.Editor
 
                 GUILayout.BeginHorizontal();
 
-                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
+                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32),
+                    GUILayout.Height(32));
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("Select", GUILayout.Width(60)))
+                {
                     _selectedBlock = block;
+                    _blockDraft.LoadFrom(block);
+                }
 
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?", "Yes", "No"))
+                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?",
+                            "Yes", "No"))
                     {
                         var path = AssetDatabase.GetAssetPath(block);
                         _blockLibrary.AllBlocks.Remove(block);
@@ -212,6 +227,8 @@ namespace Code.LevelEditor.Editor
                 GUILayout.EndHorizontal();
                 SirenixEditorGUI.EndBox();
             }
+
+            SirenixEditorGUI.EndBox();
         }
 
         [BoxGroup("🧱 Create Block")]
@@ -246,7 +263,8 @@ namespace Code.LevelEditor.Editor
         {
             try
             {
-                return string.Compare(a?.name ?? string.Empty, b?.name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+                return string.Compare(a?.name ?? string.Empty, b?.name ?? string.Empty,
+                    StringComparison.OrdinalIgnoreCase);
             }
             catch
             {
@@ -254,7 +272,7 @@ namespace Code.LevelEditor.Editor
             }
         }
     }
-    
+
     [Serializable]
     public class BlockEditorDTO
     {
