@@ -22,23 +22,20 @@ namespace Code.LevelEditor.Editor
         [BoxGroup("📦 Block Library", centerLabel: true)]
         [ReadOnly, ShowInInspector, HideLabel]
         private BlockLibrary _blockLibrary;
-
+        
         [BoxGroup("🧱 Create Block", centerLabel: true)]
         [ShowInInspector, LabelText("Block ID")]
         private string _newBlockId = "";
-
         [BoxGroup("🧱 Create Block")]
         [ShowInInspector, LabelText("Icon")]
         private Sprite _newBlockSprite;
-
         [BoxGroup("🧱 Create Block")]
         [ShowInInspector, LabelText("Prefab")]
         private GameObject _newBlockPrefab;
-
+        
         [BoxGroup("🔍 Search & Sort", centerLabel: true)]
         [ShowInInspector, LabelText("Filter")]
         private string _searchFilter = "";
-
         [BoxGroup("🔍 Search & Sort")]
         [HorizontalGroup("🔍 Search & Sort/SortRow")]
         [EnumToggleButtons, HideLabel, PropertyOrder(0)]
@@ -71,14 +68,13 @@ namespace Code.LevelEditor.Editor
             }
 
             GUILayout.Space(10);
-
-            DrawSelectedBlockSection();
-            GUILayout.Space(10);
-            
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             DrawExistingBlocks();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndScrollView();
+            
+            GUILayout.Space(10);
+            DrawSelectedBlockSection();
         }
 
         private void LoadOrCreateLibrary()
@@ -244,9 +240,6 @@ namespace Code.LevelEditor.Editor
             AssetDatabase.SaveAssets();
 
             Debug.Log($"✅ Created new block: {_newBlockId}");
-            _newBlockId = "";
-            _newBlockSprite = null;
-            _newBlockPrefab = null;
         }
 
         private int SafeCompare(UnityEngine.Object a, UnityEngine.Object b)
