@@ -16,7 +16,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 485b858c30163bf42ad43fcb38891047, type: 2}
+    - {fileID: 11400000, guid: 0e943a1debd390b4e8db09cf5ef9663f, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -386,8 +386,8 @@ MonoBehaviour:
       Entry: 7
       Data: 14|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -413,8 +413,8 @@ MonoBehaviour:
       Entry: 7
       Data: 15|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -440,8 +440,8 @@ MonoBehaviour:
       Entry: 7
       Data: 16|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -467,8 +467,8 @@ MonoBehaviour:
       Entry: 7
       Data: 17|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -494,8 +494,8 @@ MonoBehaviour:
       Entry: 7
       Data: 18|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -521,8 +521,8 @@ MonoBehaviour:
       Entry: 7
       Data: 19|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -548,8 +548,8 @@ MonoBehaviour:
       Entry: 7
       Data: 20|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -575,8 +575,8 @@ MonoBehaviour:
       Entry: 7
       Data: 21|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -602,8 +602,8 @@ MonoBehaviour:
       Entry: 7
       Data: 22|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -629,8 +629,8 @@ MonoBehaviour:
       Entry: 7
       Data: 23|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -710,8 +710,8 @@ MonoBehaviour:
       Entry: 7
       Data: 26|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -737,8 +737,8 @@ MonoBehaviour:
       Entry: 7
       Data: 27|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -764,8 +764,8 @@ MonoBehaviour:
       Entry: 7
       Data: 28|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -791,8 +791,8 @@ MonoBehaviour:
       Entry: 7
       Data: 29|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -818,8 +818,8 @@ MonoBehaviour:
       Entry: 7
       Data: 30|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -845,8 +845,8 @@ MonoBehaviour:
       Entry: 7
       Data: 31|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -872,8 +872,8 @@ MonoBehaviour:
       Entry: 7
       Data: 32|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -899,8 +899,8 @@ MonoBehaviour:
       Entry: 7
       Data: 33|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -926,8 +926,8 @@ MonoBehaviour:
       Entry: 7
       Data: 34|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -953,8 +953,8 @@ MonoBehaviour:
       Entry: 7
       Data: 35|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -1196,8 +1196,8 @@ MonoBehaviour:
       Entry: 7
       Data: 44|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 0
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule

@@ -2,58 +2,87 @@ using UnityEditor;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.Utilities.Editor;
 
 namespace Code.LevelEditor.Editor
 {
-    public class BlockLibraryWindow : EditorWindow
+    public class BlockLibraryWindow : OdinEditorWindow
     {
-        private BlockLibrary _blockLibrary;
-
-        private string _newBlockId = "";
-        private Sprite _newBlockSprite;
-        private GameObject _newBlockPrefab;
-
-        private Vector2 _scrollPosition;
-        private string _searchFilter = "";
-
-        private enum SortMode { ByID, ByPrefabName, ByIconName }
-        private SortMode _sortMode = SortMode.ByID;
-        private bool _sortAscending = true;
-
         [MenuItem("Tools/Block Library 🧱")]
         public static void ShowWindow()
         {
             var window = GetWindow<BlockLibraryWindow>(false, "Block Library", true);
-            window.minSize = new Vector2(350, 400);
+            window.minSize = new Vector2(400, 500);
         }
 
-        private void OnEnable()
+        [BoxGroup("📦 Block Library", centerLabel: true)] 
+        [ReadOnly, ShowInInspector, HideLabel]
+        private BlockLibrary _blockLibrary;
+
+        [BoxGroup("🧱 Create Block", centerLabel: true)] 
+        [LabelText("Block ID")] [ShowInInspector]
+        private string _newBlockId = "";
+        [BoxGroup("🧱 Create Block")] 
+        [LabelText("Icon")] [ShowInInspector]
+        private Sprite _newBlockSprite;
+        [BoxGroup("🧱 Create Block")] 
+        [LabelText("Prefab")] [ShowInInspector]
+        private GameObject _newBlockPrefab;
+
+        [BoxGroup("🔍 Search & Sort", centerLabel: true)] 
+        [LabelText("Filter")] [ShowInInspector]
+        private string _searchFilter = "";
+        [BoxGroup("🔍 Search & Sort")]
+        [HorizontalGroup("🔍 Search & Sort/SortRow")]
+        [EnumToggleButtons, HideLabel]
+        [PropertyOrder(0)]
+        [SerializeField]
+        private SortMode _sortMode = SortMode.ByID;
+
+        private bool _sortAscending = true;
+        private Vector2 _scroll;
+
+        private enum SortMode
         {
+            ByID,
+            ByPrefabName,
+            ByIconName
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
             LoadOrCreateLibrary();
         }
 
-        private void OnGUI()
+        protected override void DrawEditor(int index)
         {
+            base.DrawEditor(index);
+
             if (_blockLibrary == null)
             {
-                EditorGUILayout.HelpBox("No BlockLibrary asset found.", MessageType.Warning);
+                SirenixEditorGUI.ErrorMessageBox("No BlockLibrary asset found.");
                 if (GUILayout.Button("Create BlockLibrary"))
                 {
                     CreateLibrary();
                 }
+
                 return;
             }
 
-            DrawSearchField();
-            DrawSortControls();
-
             GUILayout.Space(10);
-            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-            DrawExistingBlocks();
-            EditorGUILayout.EndScrollView();
 
-            GUILayout.Space(15);
-            DrawCreateBlockSection();
+            SirenixEditorGUI.BeginBox();
+            SirenixEditorGUI.BeginBoxHeader();
+            SirenixEditorGUI.Title("📦 Existing Blocks", null, TextAlignment.Center, true);
+            SirenixEditorGUI.EndBoxHeader();
+            _scroll = EditorGUILayout.BeginScrollView(_scroll);
+            DrawExistingBlocks();
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndScrollView();
+            SirenixEditorGUI.EndBox();
         }
 
         private void LoadOrCreateLibrary()
@@ -85,63 +114,59 @@ namespace Code.LevelEditor.Editor
             Debug.Log("✅ BlockLibrary created at " + path);
         }
 
-        private void DrawSearchField()
+        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
+        [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
+        [PropertyOrder(1)]
+        private void ToggleSortDirection()
         {
-            GUILayout.Label("Search Blocks", EditorStyles.boldLabel);
-            _searchFilter = EditorGUILayout.TextField("Filter", _searchFilter);
-        }
-
-        private void DrawSortControls()
-        {
-            GUILayout.BeginHorizontal("box");
-            GUILayout.Label("Sort By:", GUILayout.Width(60));
-            _sortMode = (SortMode)EditorGUILayout.EnumPopup(_sortMode);
-
-            string arrow = _sortAscending ? "▲" : "▼";
-            if (GUILayout.Button(arrow, GUILayout.Width(25)))
-            {
-                _sortAscending = !_sortAscending;
-            }
-            GUILayout.EndHorizontal();
+            _sortAscending = !_sortAscending;
         }
 
         private void DrawExistingBlocks()
         {
-            GUILayout.Label("Existing Blocks", EditorStyles.boldLabel);
-
             if (_blockLibrary.AllBlocks == null || _blockLibrary.AllBlocks.Count == 0)
             {
-                GUILayout.Label("No blocks found.");
+                SirenixEditorGUI.InfoMessageBox("No blocks found.");
                 return;
             }
 
-            List<BlockDataEditor> blocksToShow = new List<BlockDataEditor>(_blockLibrary.AllBlocks);
+            var blocks = new List<BlockDataEditor>(_blockLibrary.AllBlocks);
 
             if (!string.IsNullOrEmpty(_searchFilter))
             {
-                blocksToShow = blocksToShow.FindAll(block =>
-                    block != null && block.ID.ToLower().Contains(_searchFilter.ToLower()));
+                blocks = blocks.FindAll(b => b != null && b.ID.ToLower().Contains(_searchFilter.ToLower()));
             }
 
-            SortBlocks();
+            blocks.Sort((a, b) =>
+            {
+                switch (_sortMode)
+                {
+                    case SortMode.ByID: return string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase);
+                    case SortMode.ByIconName:
+                        return string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "",
+                            StringComparison.OrdinalIgnoreCase);
+                    case SortMode.ByPrefabName:
+                        return SafeCompare(a.Prefab, b.Prefab);
+                    default: return 0;
+                }
+            });
 
             if (!_sortAscending)
-                blocksToShow.Reverse();
+                blocks.Reverse();
 
-            for (int i = blocksToShow.Count - 1; i >= 0; i--)
+            foreach (var block in blocks)
             {
-                var block = blocksToShow[i];
-                if (block == null)
-                {
-                    _blockLibrary.AllBlocks.RemoveAt(i);
-                    continue;
-                }
+                if (block == null) continue;
 
-                EditorGUILayout.BeginHorizontal("box");
-
-                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture,
-                    GUILayout.Width(32), GUILayout.Height(32));
+                SirenixEditorGUI.BeginBox();
+                SirenixEditorGUI.BeginBoxHeader();
                 GUILayout.Label(block.ID);
+                SirenixEditorGUI.EndBoxHeader();
+
+                GUILayout.BeginHorizontal();
+
+                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32),
+                    GUILayout.Height(32));
 
                 GUILayout.FlexibleSpace();
 
@@ -150,69 +175,31 @@ namespace Code.LevelEditor.Editor
 
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?", "Yes", "No"))
+                    if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?",
+                            "Yes", "No"))
                     {
                         string path = AssetDatabase.GetAssetPath(block);
                         _blockLibrary.AllBlocks.Remove(block);
-                        AssetDatabase.DeleteAsset(path);
                         EditorUtility.SetDirty(_blockLibrary);
+                        AssetDatabase.DeleteAsset(path);
                         AssetDatabase.SaveAssets();
                         AssetDatabase.Refresh();
                         GUIUtility.ExitGUI();
                     }
                 }
 
-                EditorGUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
+                SirenixEditorGUI.EndBox();
             }
         }
 
-        private void SortBlocks()
-        {
-            _blockLibrary.AllBlocks.Sort((a, b) =>
-            {
-                switch (_sortMode)
-                {
-                    case SortMode.ByID:
-                        return string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase);
-                    case SortMode.ByIconName:
-                        var aSprite = a.Icon != null ? a.Icon.name : string.Empty;
-                        var bSprite = b.Icon != null ? b.Icon.name : string.Empty;
-                        return string.Compare(aSprite, bSprite, StringComparison.OrdinalIgnoreCase);
-                    case SortMode.ByPrefabName:
-                        var aPrefab = a.Prefab != null ? a.Prefab.name : string.Empty;
-                        var bPrefab = b.Prefab != null ? b.Prefab.name : string.Empty;
-                        return string.Compare(aPrefab, bPrefab, StringComparison.OrdinalIgnoreCase);
-                    default:
-                        return 0;
-                }
-            });
-        }
-        
-        private void DrawCreateBlockSection()
-        {
-            GUILayout.Label("Create New Block", EditorStyles.boldLabel);
-
-            _newBlockId = EditorGUILayout.TextField("ID", _newBlockId);
-            _newBlockSprite = (Sprite)EditorGUILayout.ObjectField("Sprite", _newBlockSprite, typeof(Sprite), false);
-            _newBlockPrefab = (GameObject)EditorGUILayout.ObjectField("Prefab", _newBlockPrefab, typeof(GameObject), false);
-
-            GUI.enabled = !string.IsNullOrEmpty(_newBlockId) && _newBlockSprite != null;
-            if (GUILayout.Button("Create Block", GUILayout.Height(30)))
-            {
-                CreateNewBlock();
-            }
-            GUI.enabled = true;
-        }
-
+        [BoxGroup("🧱 Create Block")]
+        [GUIColor(0.2f, 0.8f, 0.2f)]
+        [Button("🚀 Create New Block", ButtonSizes.Large)]
+        [EnableIf("@!string.IsNullOrEmpty(_newBlockId) && _newBlockSprite != null")]
         private void CreateNewBlock()
         {
-            if (_blockLibrary == null)
-            {
-                Debug.LogError("BlockLibrary not assigned or found.");
-                return;
-            }
-
-            string folderPath = "Assets/Resources/StaticData/BlocksData";
+            var folderPath = "Assets/Resources/StaticData/BlocksData";
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder("Assets/Resources/StaticData", "BlocksData");
 
@@ -229,11 +216,26 @@ namespace Code.LevelEditor.Editor
 
             _blockLibrary.AllBlocks.Add(newBlock);
             EditorUtility.SetDirty(_blockLibrary);
+            AssetDatabase.SaveAssets();
 
             Debug.Log($"✅ Created new block: {_newBlockId}");
             _newBlockId = "";
             _newBlockSprite = null;
             _newBlockPrefab = null;
+        }
+        
+        private int SafeCompare(UnityEngine.Object a, UnityEngine.Object b)
+        {
+            try
+            {
+                string nameA = a != null ? a.name : string.Empty;
+                string nameB = b != null ? b.name : string.Empty;
+                return string.Compare(nameA, nameB, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }

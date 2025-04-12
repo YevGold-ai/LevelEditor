@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BlockLibrary
   m_EditorClassIdentifier: 
   AllBlocks:
-  - {fileID: 11400000, guid: 4e69c2dd531702e42a33d4a6c94c811a, type: 2}
   - {fileID: 11400000, guid: 96e05a53fcff82746af78cdfbda8503f, type: 2}
   - {fileID: 11400000, guid: fc5914abd9f97564983e7d01b39ed2fa, type: 2}
+  - {fileID: 11400000, guid: 0e943a1debd390b4e8db09cf5ef9663f, type: 2}
+  - {fileID: 11400000, guid: d60ba8fafcb78f8479dca900173055bc, type: 2}
