@@ -1,17 +1,24 @@
 using UnityEditor;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
+
 namespace Code.LevelEditor.Editor
 {
     public class BlockLibraryWindow : EditorWindow
     {
         private BlockLibrary _blockLibrary;
-        
+
         private string _newBlockId = "";
         private Sprite _newBlockSprite;
         private GameObject _newBlockPrefab;
-        
+
         private Vector2 _scrollPosition;
         private string _searchFilter = "";
+
+        private enum SortMode { ByID, ByPrefabName, ByIconName }
+        private SortMode _sortMode = SortMode.ByID;
+        private bool _sortAscending = true;
 
         [MenuItem("Tools/Block Library 🧱")]
         public static void ShowWindow()
@@ -22,12 +29,7 @@ namespace Code.LevelEditor.Editor
 
         private void OnEnable()
         {
-            string[] guids = AssetDatabase.FindAssets("t:BlockLibrary");
-            if (guids.Length > 0)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                _blockLibrary = AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
-            }
+            LoadOrCreateLibrary();
         }
 
         private void OnGUI()
@@ -43,8 +45,9 @@ namespace Code.LevelEditor.Editor
             }
 
             DrawSearchField();
-            GUILayout.Space(10);
+            DrawSortControls();
 
+            GUILayout.Space(10);
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             DrawExistingBlocks();
             EditorGUILayout.EndScrollView();
@@ -53,10 +56,53 @@ namespace Code.LevelEditor.Editor
             DrawCreateBlockSection();
         }
 
+        private void LoadOrCreateLibrary()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:BlockLibrary");
+            if (guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                _blockLibrary = AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
+            }
+            else
+            {
+                CreateLibrary();
+            }
+        }
+
+        private void CreateLibrary()
+        {
+            var asset = CreateInstance<BlockLibrary>();
+            string folderPath = "Assets/Resources/StaticData/BlocksData";
+            if (!AssetDatabase.IsValidFolder(folderPath))
+                AssetDatabase.CreateFolder("Assets/Resources/StaticData", "BlocksData");
+
+            string path = $"{folderPath}/BlockLibrary.asset";
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            _blockLibrary = asset;
+            Debug.Log("✅ BlockLibrary created at " + path);
+        }
+
         private void DrawSearchField()
         {
             GUILayout.Label("Search Blocks", EditorStyles.boldLabel);
             _searchFilter = EditorGUILayout.TextField("Filter", _searchFilter);
+        }
+
+        private void DrawSortControls()
+        {
+            GUILayout.BeginHorizontal("box");
+            GUILayout.Label("Sort By:", GUILayout.Width(60));
+            _sortMode = (SortMode)EditorGUILayout.EnumPopup(_sortMode);
+
+            string arrow = _sortAscending ? "▲" : "▼";
+            if (GUILayout.Button(arrow, GUILayout.Width(25)))
+            {
+                _sortAscending = !_sortAscending;
+            }
+            GUILayout.EndHorizontal();
         }
 
         private void DrawExistingBlocks()
@@ -69,17 +115,32 @@ namespace Code.LevelEditor.Editor
                 return;
             }
 
-            BlockDataEditor blockToDelete = null;
+            List<BlockDataEditor> blocksToShow = new List<BlockDataEditor>(_blockLibrary.AllBlocks);
 
-            foreach (var block in _blockLibrary.AllBlocks)
+            if (!string.IsNullOrEmpty(_searchFilter))
             {
-                if (block == null) continue;
-                if (!string.IsNullOrEmpty(_searchFilter) && !block.ID.ToLower().Contains(_searchFilter.ToLower()))
+                blocksToShow = blocksToShow.FindAll(block =>
+                    block != null && block.ID.ToLower().Contains(_searchFilter.ToLower()));
+            }
+
+            SortBlocks();
+
+            if (!_sortAscending)
+                blocksToShow.Reverse();
+
+            for (int i = blocksToShow.Count - 1; i >= 0; i--)
+            {
+                var block = blocksToShow[i];
+                if (block == null)
+                {
+                    _blockLibrary.AllBlocks.RemoveAt(i);
                     continue;
+                }
 
                 EditorGUILayout.BeginHorizontal("box");
 
-                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
+                GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture,
+                    GUILayout.Width(32), GUILayout.Height(32));
                 GUILayout.Label(block.ID);
 
                 GUILayout.FlexibleSpace();
@@ -91,23 +152,42 @@ namespace Code.LevelEditor.Editor
                 {
                     if (EditorUtility.DisplayDialog("Delete Block", $"Are you sure you want to delete '{block.ID}'?", "Yes", "No"))
                     {
-                        blockToDelete = block;
+                        string path = AssetDatabase.GetAssetPath(block);
+                        _blockLibrary.AllBlocks.Remove(block);
+                        AssetDatabase.DeleteAsset(path);
+                        EditorUtility.SetDirty(_blockLibrary);
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
+                        GUIUtility.ExitGUI();
                     }
                 }
 
                 EditorGUILayout.EndHorizontal();
             }
-
-            if (blockToDelete != null)
-            {
-                _blockLibrary.AllBlocks.Remove(blockToDelete);
-                DestroyImmediate(blockToDelete, true);
-                EditorUtility.SetDirty(_blockLibrary);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-            }
         }
 
+        private void SortBlocks()
+        {
+            _blockLibrary.AllBlocks.Sort((a, b) =>
+            {
+                switch (_sortMode)
+                {
+                    case SortMode.ByID:
+                        return string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase);
+                    case SortMode.ByIconName:
+                        var aSprite = a.Icon != null ? a.Icon.name : string.Empty;
+                        var bSprite = b.Icon != null ? b.Icon.name : string.Empty;
+                        return string.Compare(aSprite, bSprite, StringComparison.OrdinalIgnoreCase);
+                    case SortMode.ByPrefabName:
+                        var aPrefab = a.Prefab != null ? a.Prefab.name : string.Empty;
+                        var bPrefab = b.Prefab != null ? b.Prefab.name : string.Empty;
+                        return string.Compare(aPrefab, bPrefab, StringComparison.OrdinalIgnoreCase);
+                    default:
+                        return 0;
+                }
+            });
+        }
+        
         private void DrawCreateBlockSection()
         {
             GUILayout.Label("Create New Block", EditorStyles.boldLabel);
@@ -126,35 +206,34 @@ namespace Code.LevelEditor.Editor
 
         private void CreateNewBlock()
         {
+            if (_blockLibrary == null)
+            {
+                Debug.LogError("BlockLibrary not assigned or found.");
+                return;
+            }
+
+            string folderPath = "Assets/Resources/StaticData/BlocksData";
+            if (!AssetDatabase.IsValidFolder(folderPath))
+                AssetDatabase.CreateFolder("Assets/Resources/StaticData", "BlocksData");
+
             BlockDataEditor newBlock = CreateInstance<BlockDataEditor>();
             newBlock.name = _newBlockId;
             newBlock.SetID(_newBlockId);
             newBlock.SetIcon(_newBlockSprite);
             newBlock.SetPrefab(_newBlockPrefab);
 
-            AssetDatabase.AddObjectToAsset(newBlock, AssetDatabase.GetAssetPath(_blockLibrary));
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBlock));
+            string assetPath = $"{folderPath}/{_newBlockId}.asset";
+            AssetDatabase.CreateAsset(newBlock, assetPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             _blockLibrary.AllBlocks.Add(newBlock);
             EditorUtility.SetDirty(_blockLibrary);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
 
             Debug.Log($"✅ Created new block: {_newBlockId}");
             _newBlockId = "";
             _newBlockSprite = null;
             _newBlockPrefab = null;
-        }
-
-        private void CreateLibrary()
-        {
-            var asset = CreateInstance<BlockLibrary>();
-            string path = "Assets/Resources/StaticData/BlockLibrary.asset";
-            AssetDatabase.CreateAsset(asset, path);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            _blockLibrary = asset;
-            Debug.Log("✅ BlockLibrary created at " + path);
         }
     }
 }
