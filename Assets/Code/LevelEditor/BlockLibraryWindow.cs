@@ -44,19 +44,11 @@ namespace Code.LevelEditor.Editor
         [EnumToggleButtons, HideLabel, PropertyOrder(0)]
         [SerializeField]
         private SortMode _sortMode = SortMode.ByID;
-
-        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
-        [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
-        [PropertyOrder(1)]
-        private void ToggleSortDirection() => _sortAscending = !_sortAscending;
-
+        
+        private BlockDataEditor _selectedBlock;
+        private BlockEditorDTO _blockDraft = new BlockEditorDTO();
         private bool _sortAscending = true;
         private Vector2 _scroll;
-
-        [BoxGroup("🧾 Selected Block", centerLabel: true)]
-        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden)]
-        [PropertyOrder(100)]
-        private BlockDataEditor _selectedBlock;
 
         protected override void OnEnable()
         {
@@ -80,17 +72,13 @@ namespace Code.LevelEditor.Editor
 
             GUILayout.Space(10);
 
-            SirenixEditorGUI.BeginBox();
-            SirenixEditorGUI.BeginBoxHeader();
-            SirenixEditorGUI.Title("📦 Existing Blocks", null, TextAlignment.Center, true);
-            SirenixEditorGUI.EndBoxHeader();
-
+            DrawSelectedBlockSection();
+            GUILayout.Space(10);
+            
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             DrawExistingBlocks();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndScrollView();
-
-            SirenixEditorGUI.EndBox();
         }
 
         private void LoadOrCreateLibrary()
@@ -123,6 +111,48 @@ namespace Code.LevelEditor.Editor
             Debug.Log("✅ BlockLibrary created at " + path);
         }
 
+        private void DrawSelectedBlockSection()
+        {
+            SirenixEditorGUI.BeginBox();
+            SirenixEditorGUI.BeginBoxHeader();
+            SirenixEditorGUI.Title("🎯 Selected Block", null, TextAlignment.Center, true);
+            SirenixEditorGUI.EndBoxHeader();
+
+            if (_selectedBlock == null)
+            {
+                SirenixEditorGUI.InfoMessageBox("No block selected.");
+            }
+            else
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label(_selectedBlock.Icon != null ? _selectedBlock.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
+                GUILayout.Label(_selectedBlock.ID, SirenixGUIStyles.BoldLabel);
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
+
+                GUILayout.Space(8);
+
+                // Поля редактирования DTO
+                _blockDraft.Id = EditorGUILayout.TextField("ID", _blockDraft.Id);
+                _blockDraft.Icon = (Sprite)EditorGUILayout.ObjectField("Icon", _blockDraft.Icon, typeof(Sprite), false);
+                _blockDraft.Prefab = (GameObject)EditorGUILayout.ObjectField("Prefab", _blockDraft.Prefab, typeof(GameObject), false);
+
+                GUILayout.Space(4);
+
+                if (GUILayout.Button("💾 Apply Changes", GUILayout.Height(25)))
+                {
+                    _blockDraft.ApplyTo(_selectedBlock);
+                }
+            }
+
+            SirenixEditorGUI.EndBox();
+        }
+
+        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
+        [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
+        [PropertyOrder(1)]
+        private void ToggleSortDirection() => _sortAscending = !_sortAscending;
+        
         private void DrawExistingBlocks()
         {
             if (_blockLibrary.AllBlocks == null || _blockLibrary.AllBlocks.Count == 0)
@@ -138,12 +168,15 @@ namespace Code.LevelEditor.Editor
                 blocks = blocks.FindAll(b => b != null && b.ID.ToLower().Contains(_searchFilter.ToLower()));
             }
 
-            blocks.Sort((a, b) => _sortMode switch
+            blocks.Sort((a, b) =>
             {
-                SortMode.ByID => string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase),
-                SortMode.ByIconName => string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "", StringComparison.OrdinalIgnoreCase),
-                SortMode.ByPrefabName => SafeCompare(a.Prefab, b.Prefab),
-                _ => 0
+                return _sortMode switch
+                {
+                    SortMode.ByID => string.Compare(a.ID, b.ID, StringComparison.OrdinalIgnoreCase),
+                    SortMode.ByIconName => string.Compare(a.Icon?.name ?? "", b.Icon?.name ?? "", StringComparison.OrdinalIgnoreCase),
+                    SortMode.ByPrefabName => SafeCompare(a.Prefab, b.Prefab),
+                    _ => 0
+                };
             });
 
             if (!_sortAscending)
@@ -159,14 +192,12 @@ namespace Code.LevelEditor.Editor
                 SirenixEditorGUI.EndBoxHeader();
 
                 GUILayout.BeginHorizontal();
+
                 GUILayout.Label(block.Icon != null ? block.Icon.texture : Texture2D.grayTexture, GUILayout.Width(32), GUILayout.Height(32));
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("Select", GUILayout.Width(60)))
-                {
                     _selectedBlock = block;
-                    Selection.activeObject = block;
-                }
 
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
@@ -228,6 +259,30 @@ namespace Code.LevelEditor.Editor
             {
                 return 0;
             }
+        }
+    }
+    
+    [Serializable]
+    public class BlockEditorDTO
+    {
+        public string Id;
+        public Sprite Icon;
+        public GameObject Prefab;
+
+        public void LoadFrom(BlockDataEditor block)
+        {
+            Id = block.ID;
+            Icon = block.Icon;
+            Prefab = block.Prefab;
+        }
+
+        public void ApplyTo(BlockDataEditor block)
+        {
+            block.SetID(Id);
+            block.SetIcon(Icon);
+            block.SetPrefab(Prefab);
+            EditorUtility.SetDirty(block);
+            AssetDatabase.SaveAssets();
         }
     }
 }

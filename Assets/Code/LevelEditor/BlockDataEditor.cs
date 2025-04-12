@@ -20,15 +20,15 @@ namespace Code.LevelEditor
         public void SetID(string newId)
         {
             id = newId;
+            this.name = newId;
+
 #if UNITY_EDITOR
-            if (!string.IsNullOrEmpty(id))
+            string assetPath = AssetDatabase.GetAssetPath(this);
+            if (!string.IsNullOrEmpty(assetPath))
             {
-                string assetPath = AssetDatabase.GetAssetPath(this);
-                if (!string.IsNullOrEmpty(assetPath))
-                {
-                    AssetDatabase.RenameAsset(assetPath, id);
-                    EditorUtility.SetDirty(this);
-                }
+                AssetDatabase.RenameAsset(assetPath, newId);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
             }
 #endif
         }
@@ -63,12 +63,7 @@ namespace Code.LevelEditor
         {
             if (!string.IsNullOrEmpty(id))
             {
-                string assetPath = AssetDatabase.GetAssetPath(this);
-                if (!string.IsNullOrEmpty(assetPath))
-                {
-                    AssetDatabase.RenameAsset(assetPath, id);
-                    EditorUtility.SetDirty(this);
-                }
+                SetID(id);
             }
         }
 #endif
