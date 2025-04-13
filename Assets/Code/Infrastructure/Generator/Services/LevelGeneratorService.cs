@@ -1,10 +1,10 @@
+using System;
+using UnityEngine;
 using Code.Infrastructure.Generator.Factory;
 using Code.Infrastructure.Services.StaticData;
 using Code.Infrastructure.StaticData;
 using Code.LevelEditor;
 using DG.Tweening;
-using System;
-using UnityEngine;
 
 namespace Code.Infrastructure.Generator.Services
 {
@@ -14,6 +14,10 @@ namespace Code.Infrastructure.Generator.Services
         private GameObject _rootMapHolder;
         private int _currentLevelIndex = 1;
 
+        private float _nextLevelDelay = 5f;
+        private bool _autoSwitchEnabled = false;
+        private float _timer;
+        
         private readonly IStaticDataService _staticDataService;
         private readonly ITileFactory _tileFactory;
         private readonly IBlockFactory _blockFactory;
@@ -129,6 +133,28 @@ namespace Code.Infrastructure.Generator.Services
         {
             CleanUp(() => GenerateLevel());
             _currentLevelIndex++;
+        }
+        
+        public void Tick(float deltaTime)
+        {
+            if (!_autoSwitchEnabled)
+                return;
+
+            _timer += deltaTime;
+            if (_timer >= _nextLevelDelay)
+            {
+                _timer = 0;
+                LoadNextLevel();
+            }
+        }
+        
+        public bool HasEnableAutoSwitch() => _autoSwitchEnabled;
+
+        public void EnableAutoSwitch(bool enabled, float delaySeconds = 5f)
+        {
+            _autoSwitchEnabled = enabled;
+            _nextLevelDelay = delaySeconds;
+            _timer = 0f;
         }
     }
 }

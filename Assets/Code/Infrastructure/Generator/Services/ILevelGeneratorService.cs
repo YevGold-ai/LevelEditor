@@ -9,5 +9,8 @@ namespace Code.Infrastructure.Generator.Services
         void CleanUp(Action onComplete = null);
         void GenerateLevel();
         void LoadNextLevel();
+        void Tick(float deltaTime);
+        void EnableAutoSwitch(bool enabled, float delaySeconds = 5f);
+        bool HasEnableAutoSwitch();
     }
 }

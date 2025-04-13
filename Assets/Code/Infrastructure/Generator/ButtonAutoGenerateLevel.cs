@@ -1,11 +1,11 @@
+using Code.Infrastructure.Generator.Services;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using Code.Infrastructure.Generator.Services;
 
-namespace Code
+namespace Code.Infrastructure.Generator
 {
-    public class ButtonGenerateLevel : MonoBehaviour
+    public class ButtonAutoGenerateLevel : MonoBehaviour
     {
         [SerializeField] private Button _buttonGenerateLevel;
         
@@ -28,6 +28,11 @@ namespace Code
             _buttonGenerateLevel.onClick.AddListener(OnGenerateLevelButtonClick);
         }
 
+        private void Update()
+        {
+            _levelGeneratorService?.Tick(Time.deltaTime);
+        }
+        
         private void OnDestroy()
         {
             _buttonGenerateLevel.onClick.RemoveListener(OnGenerateLevelButtonClick);
@@ -35,7 +40,16 @@ namespace Code
         
         private void OnGenerateLevelButtonClick()
         {
-            _levelGeneratorService.LoadNextLevel();
+            if (!_levelGeneratorService.HasEnableAutoSwitch())
+            {
+                _levelGeneratorService.EnableAutoSwitch(true, 5f);
+                _buttonGenerateLevel.image.color = Color.cyan;
+            }
+            else
+            {
+                _levelGeneratorService.EnableAutoSwitch(false, 5f);
+                _buttonGenerateLevel.image.color = Color.red;
+            }
         }
     }
 }
