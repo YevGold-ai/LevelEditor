@@ -139,7 +139,10 @@ namespace Code.LevelEditor
 
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Set", GUILayout.Width(60)))
+                    {
+                        _onRotationSelected?.Invoke(0);
                         _onBlockSelected?.Invoke(block);
+                    }
 
                     GUILayout.EndHorizontal();
                 }
