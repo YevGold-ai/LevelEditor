@@ -92,7 +92,9 @@ namespace Code.LevelEditor
         {
             var oldMatrix = GUI.matrix;
             Vector2 center = rect.center;
-            GUIUtility.RotateAroundPivot(rotation.eulerAngles.z, center);
+            
+            float angle = rotation.eulerAngles.y;
+            GUIUtility.RotateAroundPivot(angle, center);
 
             GUI.Label(new Rect(center.x - 10, rect.yMin - 4, 25, 25), "↑", new GUIStyle(GUI.skin.label)
             {
@@ -205,7 +207,9 @@ namespace Code.LevelEditor
 
         private void ApplyRotation(float angle, LevelCell fallbackCell)
         {
-            Quaternion rotation = Quaternion.Euler(0, 0, angle);
+            Debug.Log($"⟳ Apply Rotation: {angle}°");
+            
+            Quaternion rotation = Quaternion.Euler(0, angle, 0);
 
             if (currentSelection.Count > 0)
             {

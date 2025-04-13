@@ -93,10 +93,6 @@ namespace Code.LevelEditor
                 DrawBlockId(rect, cell.Block.ID);
                 DrawRotationArrow(rect, cell.Rotation);
             }
-            else
-            {
-                //  EditorGUI.DrawRect(rect.Padding(4), Color.gray);
-            }
         }
 
         private void DrawHexagonOutline(Rect rect)
@@ -136,7 +132,10 @@ namespace Code.LevelEditor
         {
             var oldMatrix = GUI.matrix;
             Vector2 center = rect.center;
-            GUIUtility.RotateAroundPivot(rotation.eulerAngles.z, center);
+            
+            float angle = rotation.eulerAngles.y;
+            GUIUtility.RotateAroundPivot(angle, center);
+
             GUI.Label(new Rect(center.x - 10, rect.yMin - 4, 25, 25), "↑", new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.UpperCenter,
@@ -144,9 +143,9 @@ namespace Code.LevelEditor
                 normal = { textColor = Color.green },
                 fontStyle = FontStyle.Bold
             });
+
             GUI.matrix = oldMatrix;
         }
-
         private void DrawSelectionOverlay(Rect rect, int x, int y)
         {
             if (_currentSelection.Contains(new Vector2Int(x, y)))

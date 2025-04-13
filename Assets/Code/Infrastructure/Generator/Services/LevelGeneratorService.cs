@@ -1,6 +1,7 @@
 using Code.Infrastructure.Generator.Factory;
 using Code.Infrastructure.Services.StaticData;
 using Code.Infrastructure.StaticData;
+using Code.LevelEditor;
 using DG.Tweening;
 using UnityEngine;
 
@@ -14,13 +15,16 @@ namespace Code.Infrastructure.Generator.Services
         
         private readonly IStaticDataService _staticDataService;
         private readonly ITileFactory _tileFactory;
+        private readonly IBlockFactory _blockFactory;
 
         public LevelGeneratorService(
             IStaticDataService staticDataService, 
-            ITileFactory tileFactory)
+            ITileFactory tileFactory,
+            IBlockFactory blockFactory)
         {
             _staticDataService = staticDataService;
             _tileFactory = tileFactory;
+            _blockFactory = blockFactory;
         }
         
         public void SetUpRootMapHolder(GameObject rootMapHolder)
@@ -45,8 +49,6 @@ namespace Code.Infrastructure.Generator.Services
 
         public void GenerateLevel()
         {
-            CleanUp(); // 👈 очищаем предыдущую генерацию
-
             const int gridSize = 11;
             _tileMatrix = new Tile[gridSize, gridSize];
 
@@ -54,6 +56,8 @@ namespace Code.Infrastructure.Generator.Services
 
             float baseDelay = 0.02f;
 
+            var levelData = _staticDataService.GetLevelData(_currentLevelIndex.ToString());
+            
             for (int y = 0; y < gridSize; y++)
             {
                 for (int x = 0; x < gridSize; x++)
@@ -66,7 +70,7 @@ namespace Code.Infrastructure.Generator.Services
 
                     Tile tile = _tileFactory.CreateTile(_rootMapHolder);
                     tile.transform.localPosition = spawnPosition;
-
+                    
                     bool isEven = (x + y) % 2 == 0;
                     Color tileColor = isEven ? tileBalanceData.ColorEven : tileBalanceData.ColorNotEven;
                     tile.SetColor(tileColor);
@@ -74,6 +78,16 @@ namespace Code.Infrastructure.Generator.Services
                     float delay = (x + y) * baseDelay;
                     DOVirtual.DelayedCall(delay, tile.PlayAnimationShowTile);
 
+                    LevelCell cellData = levelData.Cells[x, y];
+                    if (cellData != null && cellData.Block != null)
+                    {
+                        GameObject block = _blockFactory.CreateBlock(cellData.Block.Prefab,tile.gameObject);
+                        block.transform.rotation = cellData.Rotation;
+                        
+                        tile.SetBlock(block);
+                        DOVirtual.DelayedCall(delay, tile.PlayAnimationShowBlock);
+                    }
+                    
                     _tileMatrix[x, y] = tile;
                 }
             }

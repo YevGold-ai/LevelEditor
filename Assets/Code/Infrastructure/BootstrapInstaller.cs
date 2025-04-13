@@ -29,6 +29,7 @@ namespace Code.Infrastructure
         {
             Container.BindInterfacesTo<UIFactory>().AsSingle();
             Container.BindInterfacesTo<TileFactory>().AsSingle();
+            Container.BindInterfacesTo<BlockFactory>().AsSingle();
         }
         
         private void BindSaveLoad() =>
