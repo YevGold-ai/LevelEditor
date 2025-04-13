@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 987ce556149e4897a968651a2c50b554, type: 3}
-  m_Name: Balance
+  m_Script: {fileID: 11500000, guid: 73698c54e77f2b34ea84f49756a68126, type: 3}
+  m_Name: Phantom
   m_EditorClassIdentifier: 
-  TileBalanceData:
-    ColorEven: {r: 0, g: 0.764151, b: 0.029966794, a: 1}
-    ColorNotEven: {r: 0, g: 0.5849056, b: 0.023996126, a: 1}
+  id: Phantom
+  icon: {fileID: 21300000, guid: 7a5b9d1212a9e574bab8057b0bfd5e9d, type: 3}
+  prefab: {fileID: 2611149553095981223, guid: add7e67fb68b0d54a9d9893bd0356223, type: 3}

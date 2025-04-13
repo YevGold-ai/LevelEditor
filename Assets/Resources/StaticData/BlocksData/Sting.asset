@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73698c54e77f2b34ea84f49756a68126, type: 3}
-  m_Name: Test_Boss
+  m_Name: Sting
   m_EditorClassIdentifier: 
-  id: Test_Boss
+  id: Sting
   icon: {fileID: 21300000, guid: 8f2913d99ed313748b01466c10eb10f1, type: 3}
-  prefab: {fileID: 100002, guid: 6b08ca44c9b2a1a4c99dff3ef0acc5c3, type: 3}
+  prefab: {fileID: 6902694358650038786, guid: 785a71c34aa70094982ab3dc90ecd70f, type: 3}

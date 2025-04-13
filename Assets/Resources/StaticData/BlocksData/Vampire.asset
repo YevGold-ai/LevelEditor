@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 987ce556149e4897a968651a2c50b554, type: 3}
-  m_Name: Balance
+  m_Script: {fileID: 11500000, guid: 73698c54e77f2b34ea84f49756a68126, type: 3}
+  m_Name: Vampire
   m_EditorClassIdentifier: 
-  TileBalanceData:
-    ColorEven: {r: 0, g: 0.764151, b: 0.029966794, a: 1}
-    ColorNotEven: {r: 0, g: 0.5849056, b: 0.023996126, a: 1}
+  id: Vampire
+  icon: {fileID: 21300000, guid: 77f7a09b29bc7c648bd42550021c1029, type: 3}
+  prefab: {fileID: 6328325485107444708, guid: ad33f663ccb976944b5d6b42a39ac86a, type: 3}
