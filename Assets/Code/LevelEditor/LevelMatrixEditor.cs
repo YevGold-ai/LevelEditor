@@ -9,19 +9,13 @@ namespace Code.LevelEditor
     [CreateAssetMenu(menuName = "StaticData/Levels/LevelData", fileName = "LevelData", order = 801)]
     public class LevelMatrixEditor : BaseLevelDataEditor
     {
-        [HorizontalGroup("Level")]
-        [OnValueChanged(nameof(ResizeGrid))]
-        [SerializeField, LabelText("Level Index")]
+        [HorizontalGroup("Level")] [OnValueChanged(nameof(ResizeGrid))] [SerializeField, LabelText("Level Index")]
         public int IndexLevel;
-        
-        [HorizontalGroup("Size")]
-        [OnValueChanged(nameof(ResizeGrid))]
-        [SerializeField, LabelText("Width")]
+
+        [HorizontalGroup("Size")] [OnValueChanged(nameof(ResizeGrid))] [SerializeField, LabelText("Width")]
         private int width = 5;
 
-        [HorizontalGroup("Size")]
-        [OnValueChanged(nameof(ResizeGrid))]
-        [SerializeField, LabelText("Height")]
+        [HorizontalGroup("Size")] [OnValueChanged(nameof(ResizeGrid))] [SerializeField, LabelText("Height")]
         private int height = 5;
 
         [OdinSerialize]
@@ -30,10 +24,9 @@ namespace Code.LevelEditor
             DrawElementMethod = nameof(DrawLevelCell),
             ResizableColumns = false,
             RowHeight = 64,
-            SquareCells = true,
-            Transpose = true)]
+            SquareCells = true)]
         public LevelCell[,] Grid;
-        
+
 #if UNITY_EDITOR
 
         private static BlockLibrary cachedLibrary;
@@ -279,7 +272,7 @@ namespace Code.LevelEditor
             if (Grid != null)
             {
                 int minWidth = Mathf.Min(width, Grid.GetLength(0));
-                int minHeight = Mathf.Min(height, Grid.GetLength(1));
+                int minHeight = Mathf.Min(height, Grid.GetLength(1)); // 👈 y
 
                 for (int x = 0; x < minWidth; x++)
                 for (int y = 0; y < minHeight; y++)

@@ -62,7 +62,7 @@ namespace Code.Infrastructure.Generator.Services
             {
                 for (int x = 0; x < width; x++)
                 {
-                    int invertedY = height - 1 - y; // для перевёрнутого рендера
+                    int invertedY = height - 1 - y;
 
                     Vector3 spawnPosition = new Vector3(
                         x - width / 2,
