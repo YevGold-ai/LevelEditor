@@ -10,6 +10,11 @@ namespace Code.LevelEditor
     [CreateAssetMenu(menuName = "StaticData/Levels/LevelData", fileName = "LevelData", order = 801)]
     public class LevelHegsagonEditor : BaseLevelDataEditor
     {
+        [HorizontalGroup("Level")]
+        [OnValueChanged(nameof(ResizeGrid))]
+        [SerializeField, LabelText("Level Index")]
+        public int IndexLevel;
+        
         [HorizontalGroup("Size")]
         [OnValueChanged(nameof(ResizeGrid))]
         [SerializeField, LabelText("Width")]

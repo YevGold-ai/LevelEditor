@@ -29,6 +29,9 @@ namespace Code.LevelEditor.Editor
         [ShowIf(nameof(SelectedLevelEditor))]
         public BaseLevelDataEditor SelectedLevelEditor;
         
+        [BoxGroup("🟩 Create Level")]
+        [GUIColor(0.8f, 1f, 0.8f)]
+        public int NewIndexLevel = 1;
         [BoxGroup("🟩 Create Level", centerLabel: true)]
         [GUIColor(0.8f, 1f, 0.8f)]
         public string NewLevelName = "NewLevel";
@@ -53,6 +56,7 @@ namespace Code.LevelEditor.Editor
             if (SelectedLevelType == LevelType.Matrix)
             {
                 var matrixEditor = CreateInstance<LevelMatrixEditor>();
+                matrixEditor.IndexLevel = NewIndexLevel;
                 matrixEditor.Grid = new LevelCell[NewLevelWidth, NewLevelHeight];
                 for (int y = 0; y < NewLevelHeight; y++)
                 for (int x = 0; x < NewLevelWidth; x++)
@@ -62,6 +66,7 @@ namespace Code.LevelEditor.Editor
             else if (SelectedLevelType == LevelType.Hexagon)
             {
                 var hexEditor = CreateInstance<LevelHegsagonEditor>();
+                hexEditor.IndexLevel = NewIndexLevel;
                 hexEditor.Grid = new LevelCell[NewLevelWidth, NewLevelHeight];
                 for (int y = 0; y < NewLevelHeight; y++)
                 for (int x = 0; x < NewLevelWidth; x++)

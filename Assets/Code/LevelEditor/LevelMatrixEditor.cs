@@ -9,6 +9,11 @@ namespace Code.LevelEditor
     [CreateAssetMenu(menuName = "StaticData/Levels/LevelData", fileName = "LevelData", order = 801)]
     public class LevelMatrixEditor : BaseLevelDataEditor
     {
+        [HorizontalGroup("Level")]
+        [OnValueChanged(nameof(ResizeGrid))]
+        [SerializeField, LabelText("Level Index")]
+        public int IndexLevel;
+        
         [HorizontalGroup("Size")]
         [OnValueChanged(nameof(ResizeGrid))]
         [SerializeField, LabelText("Width")]
@@ -28,7 +33,7 @@ namespace Code.LevelEditor
             SquareCells = true,
             Transpose = true)]
         public LevelCell[,] Grid;
-
+        
 #if UNITY_EDITOR
 
         private static BlockLibrary cachedLibrary;
@@ -243,6 +248,12 @@ namespace Code.LevelEditor
         public override LevelCell GetCell(Vector2Int pos) => Grid[pos.y, pos.x];
 #endif
 
+        public LevelDataDTO GetLevelDataDto()
+        {
+            var levelData = new LevelDataDTO(Grid,IndexLevel);
+            return levelData;
+        }
+        
         public IEnumerable<Vector2Int> GetAllOfType(BlockDataEditor type)
         {
             for (int y = 0; y < Grid.GetLength(1); y++)

@@ -1,10 +1,13 @@
+using Code.LevelEditor;
 using StaticData;
 
 namespace Code.Infrastructure.Services.StaticData
 {
     public interface IStaticDataService
     {
-        void LoadData();
-        BalanceStaticData Balance { get; }
+        public void LoadData();
+        
+        public BalanceStaticData Balance { get; }
+        public LevelDataDTO GetLevelData(string levelId);
     }
 }
