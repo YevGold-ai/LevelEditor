@@ -28,10 +28,13 @@ namespace Code.LevelEditor.Editor
         private BlockLibrary _blockLibrary;
         
         [BoxGroup("🧱 Create Block", centerLabel: true)] [ShowInInspector, LabelText("Block ID")]
+        [GUIColor(0.2f, 0.8f, 0.2f)]
         private string _newBlockId = "";
         [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Icon")]
+        [GUIColor(0.2f, 0.8f, 0.2f)]
         private Sprite _newBlockSprite;
         [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Prefab")]
+        [GUIColor(0.2f, 0.8f, 0.2f)]
         private GameObject _newBlockPrefab;
 
         [BoxGroup("🔍 Search & Sort", centerLabel: true)] [ShowInInspector, LabelText("Filter")]

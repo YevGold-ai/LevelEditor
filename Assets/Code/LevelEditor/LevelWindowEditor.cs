@@ -28,6 +28,7 @@ namespace Code.LevelEditor.Editor
         [InlineEditor(InlineEditorModes.GUIOnly)]
         [ShowIf(nameof(SelectedLevelEditor))]
         public BaseLevelDataEditor SelectedLevelEditor;
+        
         [BoxGroup("🟩 Create Level", centerLabel: true)]
         [GUIColor(0.8f, 1f, 0.8f)]
         public string NewLevelName = "NewLevel";
