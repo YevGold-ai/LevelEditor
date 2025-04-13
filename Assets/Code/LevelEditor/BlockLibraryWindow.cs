@@ -43,7 +43,7 @@ namespace Code.LevelEditor.Editor
         private SortMode _sortMode = SortMode.ByID;
 
         private BlockDataEditor _selectedBlock;
-        private BlockEditorDto _blockDraft = new BlockEditorDto();
+        private BlockEditorDTO _blockDraft = new BlockEditorDTO();
         private bool _sortAscending = true;
         private Vector2 _scroll;
 

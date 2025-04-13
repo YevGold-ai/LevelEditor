@@ -27,8 +27,6 @@ namespace Code.LevelEditor
             if (!string.IsNullOrEmpty(assetPath))
             {
                 AssetDatabase.RenameAsset(assetPath, newId);
-                EditorUtility.SetDirty(this);
-                AssetDatabase.SaveAssets();
             }
 #endif
         }

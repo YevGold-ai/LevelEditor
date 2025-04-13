@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Code.LevelEditor
 {
     [Serializable]
-    public class BlockEditorDto
+    public class BlockEditorDTO
     {
         public string Id;
         public Sprite Icon;

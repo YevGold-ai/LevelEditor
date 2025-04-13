@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AllBlocks:
   - {fileID: 11400000, guid: d7831333fc0fec44f9c7d1e185ca6ba9, type: 2}
-  - {fileID: 11400000, guid: 39174ad4a8c18074f943c604c8246649, type: 2}
-  - {fileID: 11400000, guid: 0c775f43ddd810b4e84cee93c7324651, type: 2}
   - {fileID: 11400000, guid: 6f840c6e80be02847a36539af4966f44, type: 2}
   - {fileID: 11400000, guid: 653a1b7a0d0a7584db631a6d3fe22975, type: 2}
   - {fileID: 11400000, guid: 275269e371b517a4c904804a054d498d, type: 2}
@@ -24,3 +22,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bea2451b1a5ce3a458317800588169f1, type: 2}
   - {fileID: 11400000, guid: fec0b7c3518cd74459f0ed42ede2827c, type: 2}
   - {fileID: 11400000, guid: 7b0fa29ca43f6c843994988a93b871bc, type: 2}
+  - {fileID: 11400000, guid: 304b773702014ad4889ec095aebabf09, type: 2}
