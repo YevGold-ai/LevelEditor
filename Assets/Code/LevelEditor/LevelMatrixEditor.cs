@@ -260,7 +260,7 @@ namespace Code.LevelEditor
 
         private void OnValidate() => ValidateGrid();
 
-        private void ValidateGrid() => ResizeGrid();
+        public void ValidateGrid() => ResizeGrid();
 
         private void ResizeGrid()
         {

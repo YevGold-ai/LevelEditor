@@ -56,11 +56,16 @@ namespace Code.LevelEditor.Editor
             if (SelectedLevelType == LevelType.Matrix)
             {
                 var matrixEditor = CreateInstance<LevelMatrixEditor>();
+                matrixEditor.name = NewLevelName;
                 matrixEditor.IndexLevel = NewIndexLevel;
-                matrixEditor.Grid = new LevelCell[NewLevelWidth, NewLevelHeight];
-                for (int y = 0; y < NewLevelHeight; y++)
-                for (int x = 0; x < NewLevelWidth; x++)
-                    matrixEditor.Grid[x, y] = new LevelCell();
+                
+                var serializedObject = new SerializedObject(matrixEditor);
+                serializedObject.FindProperty("width").intValue = NewLevelWidth;
+                serializedObject.FindProperty("height").intValue = NewLevelHeight;
+                serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                
+                matrixEditor.ValidateGrid();
+
                 newEditor = matrixEditor;
             }
             else if (SelectedLevelType == LevelType.Hexagon)
