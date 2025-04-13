@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73698c54e77f2b34ea84f49756a68126, type: 3}
+  m_Name: Castle_Tower
+  m_EditorClassIdentifier: 
+  id: Castle_Tower
+  icon: {fileID: 21300000, guid: 3c9b00902ab263f4bb68e86d2a1ad69e, type: 3}
+  prefab: {fileID: 70475504498498662, guid: 3d4b3723def133843b031caa7c7be897, type: 3}

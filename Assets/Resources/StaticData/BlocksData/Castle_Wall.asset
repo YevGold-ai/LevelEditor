@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73698c54e77f2b34ea84f49756a68126, type: 3}
+  m_Name: Castle_Wall
+  m_EditorClassIdentifier: 
+  id: Castle_Wall
+  icon: {fileID: 21300000, guid: 5456e63a8e1b8ed49bc26d6ce5050818, type: 3}
+  prefab: {fileID: 4758104223111743461, guid: a7657aa5e6a561e45bbd8310bfd675d5, type: 3}
