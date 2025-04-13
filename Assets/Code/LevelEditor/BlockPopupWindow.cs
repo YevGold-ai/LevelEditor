@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Code.LevelEditor
 {
@@ -22,12 +23,15 @@ namespace Code.LevelEditor
 
         private bool _isDragging = false;
         private Vector2 _dragOffset;
-        
+
         private bool _showSelectionList = true;
         private string _searchFilter = "";
-        
+
         private string _searchBlockFilter = "";
-        
+
+        private static Dictionary<Vector2Int, LevelCell> _copiedCells = new();
+        private static Vector2Int _copiedSize;
+
         public static void ShowPopup(
             Rect activatorRect,
             BlockLibrary library,
@@ -36,17 +40,16 @@ namespace Code.LevelEditor
             Action onClear,
             List<Vector2Int> currentSelection)
         {
-            
             if (Current != null)
                 Current.Close();
-            
+
             Current = CreateInstance<BlockPopupWindow>();
             Current._library = library;
             Current._onBlockSelected = onBlockSelected;
             Current._onRotationSelected = onRotationSelected;
             Current._onClear = onClear;
             Current._currentSelection = currentSelection;
-            
+
             Current.ShowUtility();
             Current.position = activatorRect;
         }
@@ -54,24 +57,29 @@ namespace Code.LevelEditor
         private void OnGUI()
         {
             HandleWindowDrag();
-            
+
             EditorGUILayout.BeginVertical("box");
-            DrawTitle("🧱 Select Block");
+            DrawTitle("\U0001f9f1 Select Block");
             DrawBlockList();
             EditorGUILayout.EndVertical();
-            
+
             GUILayout.Space(10);
             EditorGUILayout.BeginVertical("box");
-            DrawTitle("📦 Selected Cells");
+            DrawTitle("\U0001f4e6 Selected Cells");
             DrawSelectedCellsList();
             EditorGUILayout.EndVertical();
-            
+
             GUILayout.Space(10);
             EditorGUILayout.BeginVertical("box");
             DrawTitle("↻ Rotation");
             DrawRotationButtons();
             EditorGUILayout.EndVertical();
-            
+
+            GUILayout.Space(10);
+            EditorGUILayout.BeginVertical("box");
+            DrawCopyPasteButtons();
+            EditorGUILayout.EndVertical();
+
             GUILayout.Space(10);
             DrawClearButton();
         }
@@ -92,20 +100,16 @@ namespace Code.LevelEditor
                     _isDragging = false;
                     break;
                 case EventType.MouseDrag when _isDragging:
-                {
                     var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
-                    position = new Rect(mousePos.x - _dragOffset.x, mousePos.y - _dragOffset.y, position.width, position.height);
+                    position = new Rect(mousePos.x - _dragOffset.x, mousePos.y - _dragOffset.y, position.width,
+                        position.height);
                     Event.current.Use();
                     break;
-                }
             }
         }
-        
-        private void OnLostFocus()
-        {
-            Close();
-        }
-        
+
+        private void OnLostFocus() => Close();
+
         private void DrawTitle(string title)
         {
             GUIStyle style = new GUIStyle(EditorStyles.boldLabel)
@@ -153,10 +157,9 @@ namespace Code.LevelEditor
             GUILayout.EndVertical();
         }
 
-
         private void DrawSelectedCellsList()
         {
-            _showSelectionList = EditorGUILayout.Foldout(_showSelectionList, "🟩 Selected Cells Details", true);
+            _showSelectionList = EditorGUILayout.Foldout(_showSelectionList, "\U0001f7e9 Selected Cells Details", true);
             if (!_showSelectionList) return;
 
             _searchFilter = EditorGUILayout.TextField("Search", _searchFilter);
@@ -192,7 +195,7 @@ namespace Code.LevelEditor
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
         }
-        
+
         private void DrawRotationButtons()
         {
             GUILayout.BeginHorizontal();
@@ -203,13 +206,88 @@ namespace Code.LevelEditor
             GUILayout.EndHorizontal();
         }
 
+        private void DrawCopyPasteButtons()
+        {
+            GUILayout.BeginHorizontal();
+
+            // КНОПКА КОПИРОВАНИЯ
+            GUI.backgroundColor = new Color(0.8f, 0.8f, 1f);
+            if (GUILayout.Button("📋 Copy", GUILayout.Height(25)))
+            {
+                _copiedCells.Clear();
+
+                if (_currentSelection != null && _currentSelection.Count > 0)
+                {
+                    foreach (var pos in _currentSelection)
+                    {
+                        var cell = LevelEditorHelpers.TryGetCell(pos);
+                        if (cell != null)
+                        {
+                            _copiedCells[pos] = new LevelCell
+                            {
+                                Block = cell.Block,
+                                Rotation = cell.Rotation
+                            };
+                        }
+                    }
+
+                    Debug.Log($"📋 Copied {_copiedCells.Count} cells");
+                }
+                else
+                {
+                    Debug.LogWarning("❌ No cells selected to copy.");
+                }
+            }
+
+            // КНОПКА ВСТАВКИ
+            GUI.backgroundColor = new Color(0.7f, 1f, 0.7f);
+            if (GUILayout.Button("📌 Paste", GUILayout.Height(25)))
+            {
+                if (_copiedCells == null || _copiedCells.Count == 0)
+                {
+                    Debug.LogWarning("❌ Nothing copied to paste.");
+                }
+                else if (_currentSelection == null || _currentSelection.Count == 0)
+                {
+                    Debug.LogWarning("❌ No cells selected to paste into.");
+                }
+                else
+                {
+                    var firstTarget = _currentSelection[0];
+                    var firstSource = _copiedCells.Keys.First();
+
+                    int pasteCount = 0;
+
+                    foreach (var sourcePair in _copiedCells)
+                    {
+                        var offset = sourcePair.Key - firstSource;
+                        var targetPos = firstTarget + offset;
+
+                        var targetCell = LevelEditorHelpers.TryGetCell(targetPos);
+                        if (targetCell != null)
+                        {
+                            targetCell.Block = sourcePair.Value.Block;
+                            targetCell.Rotation = sourcePair.Value.Rotation;
+                            pasteCount++;
+                        }
+                    }
+
+                    Debug.Log($"📌 Pasted {pasteCount} cells starting from [{firstTarget.x},{firstTarget.y}]");
+                }
+            }
+
+            GUI.backgroundColor = Color.white;
+            GUILayout.EndHorizontal();
+        }
+
         private void DrawClearButton()
         {
-            GUI.backgroundColor = new Color(1f, 0.3f, 0.3f); 
+            GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
             if (GUILayout.Button("🗑 Clear Block(s)", GUILayout.Height(30)))
             {
                 _onClear?.Invoke();
             }
+
             GUI.backgroundColor = Color.white;
         }
 
@@ -217,7 +295,7 @@ namespace Code.LevelEditor
         {
             public static Func<Vector2Int, LevelCell> TryGetCell = _ => null;
         }
-        
+
         private void OnDestroy()
         {
             _currentSelection?.Clear();
@@ -226,7 +304,7 @@ namespace Code.LevelEditor
                 LevelEditorHelpers.TryGetCell = _ => null;
 
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-            
+
             if (Current == this)
                 Current = null;
         }

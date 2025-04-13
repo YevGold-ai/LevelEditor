@@ -3416,8 +3416,8 @@ MonoBehaviour:
       Entry: 7
       Data: 126|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 3
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule
@@ -3443,8 +3443,8 @@ MonoBehaviour:
       Entry: 7
       Data: 127|Code.LevelEditor.LevelCell, Game
     - Name: Block
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 3
     - Name: Rotation
       Entry: 7
       Data: UnityEngine.Quaternion, UnityEngine.CoreModule

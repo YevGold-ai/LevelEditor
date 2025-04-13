@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1aec87fdf02318d4e94157e0008e6d45, type: 3}
-  m_Name: LevelData_2
+  m_Name: Level_3
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -3931,6 +3931,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  IndexLevel: 2
+  IndexLevel: 3
   width: 12
   height: 12
