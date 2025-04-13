@@ -92,7 +92,6 @@ namespace Code.LevelEditor
         {
             var oldMatrix = GUI.matrix;
             Vector2 center = rect.center;
-            
             float angle = rotation.eulerAngles.y;
             GUIUtility.RotateAroundPivot(angle, center);
 
@@ -177,9 +176,9 @@ namespace Code.LevelEditor
             {
                 currentSelection = new List<Vector2Int> { clickedPos };
             }
-            
+
             BlockPopupWindow.LevelEditorHelpers.TryGetCell = pos => GetCell(pos);
-            
+
             BlockPopupWindow.ShowPopup(
                 rect,
                 cachedLibrary,
@@ -208,7 +207,7 @@ namespace Code.LevelEditor
         private void ApplyRotation(float angle, LevelCell fallbackCell)
         {
             Debug.Log($"⟳ Apply Rotation: {angle}°");
-            
+
             Quaternion rotation = Quaternion.Euler(0, angle, 0);
 
             if (currentSelection.Count > 0)
@@ -248,21 +247,21 @@ namespace Code.LevelEditor
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
 
-        private LevelCell GetCell(int x, int y) => Grid[y, x];
-        public override LevelCell GetCell(Vector2Int pos) => Grid[pos.y, pos.x];
+        private LevelCell GetCell(int x, int y) => Grid[x, y];
+        public override LevelCell GetCell(Vector2Int pos) => Grid[pos.x, pos.y];
 #endif
 
         public LevelDataDTO GetLevelDataDto()
         {
-            var levelData = new LevelDataDTO(Grid,IndexLevel);
+            var levelData = new LevelDataDTO(Grid, IndexLevel);
             return levelData;
         }
-        
+
         public IEnumerable<Vector2Int> GetAllOfType(BlockDataEditor type)
         {
-            for (int y = 0; y < Grid.GetLength(1); y++)
             for (int x = 0; x < Grid.GetLength(0); x++)
-                if (Grid[y, x]?.Block == type)
+            for (int y = 0; y < Grid.GetLength(1); y++)
+                if (Grid[x, y]?.Block == type)
                     yield return new Vector2Int(x, y);
         }
 
