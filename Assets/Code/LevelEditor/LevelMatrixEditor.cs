@@ -162,7 +162,8 @@ namespace Code.LevelEditor
             if (cachedLibrary == null) return;
 
             Vector2 screenPos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
-            Rect rect = new Rect(screenPos, Vector2.zero);
+            Vector2 windowSize = new Vector2(350, 550);
+            Rect rect = new Rect(screenPos, windowSize);
 
             BlockPopupWindow.LevelEditorHelpers.TryGetCell = pos => GetCell(pos);
             

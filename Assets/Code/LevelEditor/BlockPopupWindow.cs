@@ -47,7 +47,7 @@ namespace Code.LevelEditor
             Current._currentSelection = currentSelection;
             
             Current.ShowUtility();
-            Current.position = new Rect(activatorRect.x, activatorRect.y, 300, 400);
+            Current.position = activatorRect;
         }
 
         private void OnGUI()
