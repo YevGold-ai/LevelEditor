@@ -222,8 +222,6 @@ namespace Code.LevelEditor
             {
                 foreach (var pos in currentSelection)
                     GetCell(pos).Block = null;
-
-                currentSelection.Clear();
             }
             else
             {
