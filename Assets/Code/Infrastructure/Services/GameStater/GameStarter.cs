@@ -1,5 +1,6 @@
 using System.Text;
 using Code.Infrastructure.Factory;
+using Code.Infrastructure.Generator.Services;
 using Code.Infrastructure.Services.PersistenceProgress;
 using Code.Infrastructure.Services.PersistenceProgress.Player;
 using Code.Infrastructure.Services.SaveLoad;
@@ -10,19 +11,16 @@ namespace Code.Infrastructure.Services.GameStater
 {
     public class GameStarter : IGameStarter
     {
-        private readonly IStaticDataService _staticDataService;
         private readonly IPersistenceProgressService _progressService;
         private readonly ISaveLoadService _saveLoadService;
         private readonly IUIFactory _uiFactory;
         
         public GameStarter(
             IPersistenceProgressService progressService,
-            IStaticDataService staticDataService,
             ISaveLoadService saveLoadService, 
             IUIFactory uiFactory)
         {
             _progressService = progressService;
-            _staticDataService = staticDataService;
             _saveLoadService = saveLoadService;
             _uiFactory = uiFactory;
         }

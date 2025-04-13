@@ -1,4 +1,6 @@
 using Code.Infrastructure.Factory;
+using Code.Infrastructure.Generator.Factory;
+using Code.Infrastructure.Generator.Services;
 using Code.Infrastructure.Services.PersistenceProgress;
 using Code.Infrastructure.Services.SaveLoad;
 using Code.Infrastructure.Services.StaticData;
@@ -20,11 +22,13 @@ namespace Code.Infrastructure
             BindSaveLoad();
             BindProgressData();
             BindStaticData();
+            BindGenerator();
         }
 
         private void BindFactory()
         {
             Container.BindInterfacesTo<UIFactory>().AsSingle();
+            Container.BindInterfacesTo<TileFactory>().AsSingle();
         }
         
         private void BindSaveLoad() =>
@@ -39,6 +43,11 @@ namespace Code.Infrastructure
             Container.Bind<IStaticDataService>().To<StaticDataService>().AsSingle();
         }
 
+        private void BindGenerator()
+        {
+            Container.Bind<ILevelGeneratorService>().To<LevelGeneratorService>().AsSingle();
+        }
+        
         public void Initialize()
         {
             Container.Resolve<IStaticDataService>().LoadData();

@@ -1,4 +1,5 @@
 ﻿using System;
+using Code.Infrastructure.Generator.Services;
 using Code.Infrastructure.Services.GameStater;
 using UnityEngine;
 using Zenject;
@@ -18,6 +19,7 @@ namespace CodeBase.Infrastructure
         public void Initialize()
         {
             Container.Resolve<IGameStarter>().Initialize();
+            Container.Resolve<ILevelGeneratorService>().SetUpRootMapHolder(_mapHolder);
         }
 
         public void Dispose()
