@@ -92,6 +92,47 @@ namespace Code.LevelEditor.Editor
             SelectedName = NewLevelName;
         }
 
+        [BoxGroup("Select Level")]
+        [GUIColor(1f, 0.4f, 0.4f)]
+        [ShowIf(nameof(SelectedLevelEditor))]
+        [Button("🗑 Delete Selected Level", ButtonSizes.Large)]
+        private void DeleteSelectedLevelEditor()
+        {
+            if (SelectedLevelEditor == null)
+            {
+                Debug.LogWarning("⚠️ No level selected to delete.");
+                return;
+            }
+
+            if (EditorUtility.DisplayDialog(
+                    "Delete Level",
+                    $"Are you sure you want to delete '{SelectedLevelEditor.name}'?\nThis cannot be undone.",
+                    "Delete", "Cancel"))
+            {
+                string path = AssetDatabase.GetAssetPath(SelectedLevelEditor);
+                
+                SelectedLevelEditor = null;
+                SelectedName = string.Empty;
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    AssetDatabase.DeleteAsset(path);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+
+                    Debug.Log($"🗑 Deleted level: {path}");
+                }
+                
+                LoadLevelEditors();
+
+                if (levelEditors.Count > 0)
+                {
+                    SelectedLevelEditor = levelEditors[0];
+                    SelectedName = SelectedLevelEditor.name;
+                }
+            }
+        }
+        
         private void OnEnable()
         {
             LoadLevelEditors();
