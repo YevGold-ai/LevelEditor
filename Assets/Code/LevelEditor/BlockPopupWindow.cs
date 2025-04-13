@@ -36,6 +36,7 @@ namespace Code.LevelEditor
             Action onClear,
             List<Vector2Int> currentSelection)
         {
+            
             if (Current != null)
                 Current.Close();
             

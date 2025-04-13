@@ -165,6 +165,12 @@ namespace Code.LevelEditor
             Vector2 windowSize = new Vector2(350, 550);
             Rect rect = new Rect(screenPos, windowSize);
 
+            Vector2Int clickedPos = new Vector2Int(x, y);
+            if (currentSelection == null || !currentSelection.Contains(clickedPos))
+            {
+                currentSelection = new List<Vector2Int> { clickedPos };
+            }
+            
             BlockPopupWindow.LevelEditorHelpers.TryGetCell = pos => GetCell(pos);
             
             BlockPopupWindow.ShowPopup(

@@ -30,9 +30,9 @@ namespace Code.LevelEditor
 
 #if UNITY_EDITOR
 
-        private static BlockLibrary cachedLibrary;
-        private Vector2Int? selectionStart;
-        private List<Vector2Int> currentSelection = new();
+        private static BlockLibrary _cachedLibrary;
+        private Vector2Int? _selectionStart;
+        private List<Vector2Int> _currentSelection = new();
 
         private LevelCell DrawLevelCell(Rect rect, LevelCell cell, int x, int y)
         {
@@ -73,11 +73,11 @@ namespace Code.LevelEditor
 
         private void LoadLibrary()
         {
-            if (cachedLibrary != null) return;
+            if (_cachedLibrary != null) return;
             string[] guids = AssetDatabase.FindAssets("t:BlockLibrary");
             if (guids.Length == 0) return;
             string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-            cachedLibrary = AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
+            _cachedLibrary = AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
         }
 
         private void DrawCellContent(Rect rect, LevelCell cell)
@@ -144,7 +144,7 @@ namespace Code.LevelEditor
 
         private void DrawSelectionOverlay(Rect rect, int x, int y)
         {
-            if (currentSelection.Contains(new Vector2Int(x, y)))
+            if (_currentSelection.Contains(new Vector2Int(x, y)))
             {
                 EditorGUI.DrawRect(rect, new Color(0f, 1f, 0f, 0.25f));
             }
@@ -158,33 +158,33 @@ namespace Code.LevelEditor
                 {
                     if (Event.current.control)
                     {
-                        if (!selectionStart.HasValue)
+                        if (!_selectionStart.HasValue)
                         {
-                            selectionStart = new Vector2Int(x, y);
-                            currentSelection.Clear();
-                            currentSelection.Add(selectionStart.Value);
+                            _selectionStart = new Vector2Int(x, y);
+                            _currentSelection.Clear();
+                            _currentSelection.Add(_selectionStart.Value);
                         }
                         else
                         {
                             Vector2Int end = new Vector2Int(x, y);
-                            currentSelection.Clear();
-                            int minX = Mathf.Min(selectionStart.Value.x, end.x);
-                            int maxX = Mathf.Max(selectionStart.Value.x, end.x);
-                            int minY = Mathf.Min(selectionStart.Value.y, end.y);
-                            int maxY = Mathf.Max(selectionStart.Value.y, end.y);
+                            _currentSelection.Clear();
+                            int minX = Mathf.Min(_selectionStart.Value.x, end.x);
+                            int maxX = Mathf.Max(_selectionStart.Value.x, end.x);
+                            int minY = Mathf.Min(_selectionStart.Value.y, end.y);
+                            int maxY = Mathf.Max(_selectionStart.Value.y, end.y);
 
                             for (int i = minX; i <= maxX; i++)
                             for (int j = minY; j <= maxY; j++)
-                                currentSelection.Add(new Vector2Int(i, j));
+                                _currentSelection.Add(new Vector2Int(i, j));
 
-                            selectionStart = null;
+                            _selectionStart = null;
                             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                         }
                     }
                     else
                     {
-                        selectionStart = null;
-                        currentSelection.Clear();
+                        _selectionStart = null;
+                        _currentSelection.Clear();
                     }
 
                     Event.current.Use();
@@ -200,28 +200,42 @@ namespace Code.LevelEditor
 
         private void ShowContextMenu(LevelCell cell, int x, int y)
         {
-            if (cachedLibrary == null) return;
+            if (_cachedLibrary == null || cell == null)
+                return;
 
             Vector2 screenPos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
-            Rect rect = new Rect(screenPos, Vector2.zero);
-
+            Rect rect = new Rect(screenPos, new Vector2(350, 500));
+            
+            Vector2Int clickedPos = new Vector2Int(x, y);
+            if (!_currentSelection.Contains(clickedPos))
+            {
+                Debug.Log("Already selected");
+                Debug.Log(_currentSelection.Contains(clickedPos));
+                _currentSelection.Add(clickedPos);
+            }
+            else
+            {
+               Debug.Log("Dont Already selected");
+            }
+            
             BlockPopupWindow.LevelEditorHelpers.TryGetCell = pos => GetCell(pos);
 
             BlockPopupWindow.ShowPopup(
                 rect,
-                cachedLibrary,
+                _cachedLibrary,
                 block => ApplyBlock(block, cell),
                 angle => ApplyRotation(angle, cell),
                 () => ClearBlock(cell),
-                currentSelection
+                _currentSelection
             );
         }
 
+
         private void ApplyBlock(BlockDataEditor block, LevelCell fallbackCell)
         {
-            if (currentSelection.Count > 0)
+            if (_currentSelection.Count > 0)
             {
-                foreach (var pos in currentSelection)
+                foreach (var pos in _currentSelection)
                     GetCell(pos).Block = block;
             }
             else fallbackCell.Block = block;
@@ -231,9 +245,9 @@ namespace Code.LevelEditor
         private void ApplyRotation(float angle, LevelCell fallbackCell)
         {
             Quaternion rotation = Quaternion.Euler(0, 0, angle);
-            if (currentSelection.Count > 0)
+            if (_currentSelection.Count > 0)
             {
-                foreach (var pos in currentSelection)
+                foreach (var pos in _currentSelection)
                     GetCell(pos).Rotation = rotation;
             }
             else fallbackCell.Rotation = rotation;
@@ -242,11 +256,11 @@ namespace Code.LevelEditor
 
         private void ClearBlock(LevelCell fallbackCell)
         {
-            if (currentSelection.Count > 0)
+            if (_currentSelection.Count > 0)
             {
-                foreach (var pos in currentSelection)
+                foreach (var pos in _currentSelection)
                     GetCell(pos).Block = null;
-                currentSelection.Clear();
+                _currentSelection.Clear();
             }
             else fallbackCell.Block = null;
             MarkDirty();
