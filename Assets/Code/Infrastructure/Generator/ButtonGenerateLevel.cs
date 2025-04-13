@@ -36,7 +36,7 @@ namespace Code
         
         private void OnGenerateLevelButtonClick()
         {
-            _levelGeneratorService.GenerateLevel();
+            _levelGeneratorService.LoadNextLevel();
         }
     }
 }

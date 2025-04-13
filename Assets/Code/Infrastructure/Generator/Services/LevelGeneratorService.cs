@@ -3,6 +3,7 @@ using Code.Infrastructure.Services.StaticData;
 using Code.Infrastructure.StaticData;
 using Code.LevelEditor;
 using DG.Tweening;
+using System;
 using UnityEngine;
 
 namespace Code.Infrastructure.Generator.Services
@@ -12,13 +13,13 @@ namespace Code.Infrastructure.Generator.Services
         private Tile[,] _tileMatrix;
         private GameObject _rootMapHolder;
         private int _currentLevelIndex = 1;
-        
+
         private readonly IStaticDataService _staticDataService;
         private readonly ITileFactory _tileFactory;
         private readonly IBlockFactory _blockFactory;
 
         public LevelGeneratorService(
-            IStaticDataService staticDataService, 
+            IStaticDataService staticDataService,
             ITileFactory tileFactory,
             IBlockFactory blockFactory)
         {
@@ -26,25 +27,53 @@ namespace Code.Infrastructure.Generator.Services
             _tileFactory = tileFactory;
             _blockFactory = blockFactory;
         }
-        
+
         public void SetUpRootMapHolder(GameObject rootMapHolder)
         {
             _rootMapHolder = rootMapHolder;
         }
 
-        public void CleanUp()
+        public void CleanUp(Action onComplete = null)
         {
-            if (_tileMatrix == null) return;
-
-            foreach (var tile in _tileMatrix)
+            if (_tileMatrix == null)
             {
-                if (tile != null)
-                {
-                    UnityEngine.Object.Destroy(tile.gameObject);
-                }
+                onComplete?.Invoke();
+                return;
             }
 
-            _tileMatrix = null;
+            int width = _tileMatrix.GetLength(0);
+            int height = _tileMatrix.GetLength(1);
+            float baseDelay = 0.01f;
+            int counter = 0;
+            int total = width * height;
+
+            for (int y = height - 1; y >= 0; y--)
+            {
+                for (int x = width - 1; x >= 0; x--)
+                {
+                    Tile tile = _tileMatrix[x, y];
+                    if (tile == null)
+                    {
+                        counter++;
+                        continue;
+                    }
+
+                    float delay = ((width - x) + (height - y)) * baseDelay;
+                    DOVirtual.DelayedCall(delay, () =>
+                    {
+                        tile.PlayAnimationHideTile(() =>
+                        {
+                            UnityEngine.Object.Destroy(tile.gameObject);
+                            counter++;
+                            if (counter >= total)
+                            {
+                                _tileMatrix = null;
+                                onComplete?.Invoke();
+                            }
+                        });
+                    });
+                }
+            }
         }
 
         public void GenerateLevel()
@@ -96,5 +125,10 @@ namespace Code.Infrastructure.Generator.Services
             }
         }
 
+        public void LoadNextLevel()
+        {
+            CleanUp(() => GenerateLevel());
+            _currentLevelIndex++;
+        }
     }
 }

@@ -43,11 +43,11 @@ namespace Code.Infrastructure.Services.StaticData
 
         private int ExtractIndexFromId(string levelId)
         {
-            if (string.IsNullOrEmpty(levelId))
-                return 0;
-
+            if (int.TryParse(levelId, out int result))
+                return result;
+            
             var parts = levelId.Split('_');
-            if (parts.Length == 2 && int.TryParse(parts[1], out int result))
+            if (parts.Length == 2 && int.TryParse(parts[1], out result))
                 return result;
 
             return 0;

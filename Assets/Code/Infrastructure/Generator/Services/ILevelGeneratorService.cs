@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Code.Infrastructure.Generator.Services
@@ -5,7 +6,8 @@ namespace Code.Infrastructure.Generator.Services
     public interface ILevelGeneratorService
     {
         void SetUpRootMapHolder(GameObject rootMapHolder);
-        void CleanUp();
+        void CleanUp(Action onComplete = null);
         void GenerateLevel();
+        void LoadNextLevel();
     }
 }
