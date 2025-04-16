@@ -1,4 +1,4 @@
-# Grid Level Editor 🧩
+# Tile Level Editor 🧩
 
 A powerful, fully customized level editor made in Unity using Odin Inspector. Built to quickly prototype and manage grid-based levels both in the editor and at runtime.
 ---
