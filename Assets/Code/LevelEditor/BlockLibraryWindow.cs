@@ -17,30 +17,30 @@ namespace Code.LevelEditor.Editor
             ByIconName
         }
 
-        [MenuItem("Tools/Block Library 🧱")]
+        [MenuItem("Tools/Gid Level Editor/Block Window")]
         public static void ShowWindow()
         {
             var window = GetWindow<BlockLibraryWindow>(false, "Block Library", true);
             window.minSize = new Vector2(400, 500);
         }
 
-        [BoxGroup("📦 Block Library", centerLabel: true)] [ReadOnly, ShowInInspector, HideLabel]
+        [BoxGroup("Block Library", centerLabel: true)] [ReadOnly, ShowInInspector, HideLabel]
         private BlockLibrary _blockLibrary;
         
-        [BoxGroup("🧱 Create Block", centerLabel: true)] [ShowInInspector, LabelText("Block ID")]
+        [BoxGroup("Create Block", centerLabel: true)] [ShowInInspector, LabelText("Block ID")]
         [GUIColor(0.2f, 0.8f, 0.2f)]
         private string _newBlockId = "";
-        [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Icon")]
+        [BoxGroup("Create Block")] [ShowInInspector, LabelText("Icon")]
         [GUIColor(0.2f, 0.8f, 0.2f)]
         private Sprite _newBlockSprite;
-        [BoxGroup("🧱 Create Block")] [ShowInInspector, LabelText("Prefab")]
+        [BoxGroup("Create Block")] [ShowInInspector, LabelText("Prefab")]
         [GUIColor(0.2f, 0.8f, 0.2f)]
         private GameObject _newBlockPrefab;
 
-        [BoxGroup("🔍 Search & Sort", centerLabel: true)] [ShowInInspector, LabelText("Filter")]
+        [BoxGroup("Search & Sort", centerLabel: true)] [ShowInInspector, LabelText("Filter")]
         private string _searchFilter = "";
-        [BoxGroup("🔍 Search & Sort")]
-        [HorizontalGroup("🔍 Search & Sort/SortRow")]
+        [BoxGroup("Search & Sort")]
+        [HorizontalGroup("Search & Sort/SortRow")]
         [EnumToggleButtons, HideLabel, PropertyOrder(0)]
         [SerializeField]
         private SortMode _sortMode = SortMode.ByID;
@@ -64,10 +64,7 @@ namespace Code.LevelEditor.Editor
             {
                 SirenixEditorGUI.ErrorMessageBox("No BlockLibrary asset found.");
                 if (GUILayout.Button("Create BlockLibrary"))
-                {
                     CreateLibrary();
-                }
-
                 return;
             }
 
@@ -108,14 +105,14 @@ namespace Code.LevelEditor.Editor
             AssetDatabase.Refresh();
 
             _blockLibrary = asset;
-            Debug.Log("✅ BlockLibrary created at " + path);
+            Debug.Log("BlockLibrary created at " + path);
         }
 
         private void DrawSelectedBlockSection()
         {
             SirenixEditorGUI.BeginBox();
             SirenixEditorGUI.BeginBoxHeader();
-            SirenixEditorGUI.Title("🎯 Selected Block", null, TextAlignment.Center, true);
+            SirenixEditorGUI.Title("Selected Block", null, TextAlignment.Center, true);
             SirenixEditorGUI.EndBoxHeader();
 
             if (_selectedBlock == null)
@@ -132,8 +129,7 @@ namespace Code.LevelEditor.Editor
                 EditorGUILayout.EndHorizontal();
 
                 GUILayout.Space(8);
-
-                // Поля редактирования DTO
+                
                 _blockDraft.Id = EditorGUILayout.TextField("ID", _blockDraft.Id);
                 _blockDraft.Icon = (Sprite)EditorGUILayout.ObjectField("Icon", _blockDraft.Icon, typeof(Sprite), false);
                 _blockDraft.Prefab =
@@ -141,7 +137,7 @@ namespace Code.LevelEditor.Editor
 
                 GUILayout.Space(4);
 
-                if (GUILayout.Button("💾 Apply Changes", GUILayout.Height(25)))
+                if (GUILayout.Button("Apply Changes", GUILayout.Height(25)))
                 {
                     _blockDraft.ApplyTo(_selectedBlock);
                 }
@@ -150,7 +146,7 @@ namespace Code.LevelEditor.Editor
             SirenixEditorGUI.EndBox();
         }
 
-        [HorizontalGroup("🔍 Search & Sort/SortRow", width: 25)]
+        [HorizontalGroup("Search & Sort/SortRow", width: 25)]
         [Button("@_sortAscending ? \"▲\" : \"▼\"", ButtonSizes.Medium)]
         [PropertyOrder(1)]
         private void ToggleSortDirection() => _sortAscending = !_sortAscending;
@@ -159,7 +155,7 @@ namespace Code.LevelEditor.Editor
         {
             SirenixEditorGUI.BeginBox();
             SirenixEditorGUI.BeginBoxHeader();
-            SirenixEditorGUI.Title("📦 Existing Blocks", null, TextAlignment.Center, true);
+            SirenixEditorGUI.Title("Existing Blocks", null, TextAlignment.Center, true);
             SirenixEditorGUI.EndBoxHeader();
 
             if (_blockLibrary.AllBlocks == null || _blockLibrary.AllBlocks.Count == 0)
@@ -172,9 +168,7 @@ namespace Code.LevelEditor.Editor
             var blocks = new List<BlockDataEditor>(_blockLibrary.AllBlocks);
 
             if (!string.IsNullOrEmpty(_searchFilter))
-            {
                 blocks = blocks.FindAll(b => b != null && b.ID.ToLower().Contains(_searchFilter.ToLower()));
-            }
 
             blocks.Sort((a, b) =>
             {
@@ -193,7 +187,8 @@ namespace Code.LevelEditor.Editor
 
             foreach (var block in blocks)
             {
-                if (block == null) continue;
+                if (block == null) 
+                    continue;
 
                 SirenixEditorGUI.BeginBox();
                 SirenixEditorGUI.BeginBoxHeader();
@@ -248,9 +243,9 @@ namespace Code.LevelEditor.Editor
             SirenixEditorGUI.EndBox();
         }
 
-        [BoxGroup("🧱 Create Block")]
+        [BoxGroup("Create Block")]
         [GUIColor(0.2f, 0.8f, 0.2f)]
-        [Button("🚀 Create New Block", ButtonSizes.Large)]
+        [Button("Create New Block", ButtonSizes.Large)]
         [EnableIf("@!string.IsNullOrEmpty(_newBlockId) && _newBlockSprite != null")]
         private void CreateNewBlock()
         {
@@ -273,7 +268,7 @@ namespace Code.LevelEditor.Editor
             EditorUtility.SetDirty(_blockLibrary);
             AssetDatabase.SaveAssets();
 
-            Debug.Log($"✅ Created new block: {_newBlockId}");
+            Debug.Log($"Created new block: {_newBlockId}");
         }
 
         private int SafeCompare(UnityEngine.Object a, UnityEngine.Object b)

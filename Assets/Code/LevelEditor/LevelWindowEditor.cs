@@ -8,7 +8,7 @@ namespace Code.LevelEditor.Editor
 {
     public class LevelWindowEditor : OdinEditorWindow
     {
-        [MenuItem("Tools/Level Editor 🚀")]
+        [MenuItem("Tools/Gid Level Editor/Level Window")]
         private static void OpenWindow()
         {
             var window = GetWindow<LevelWindowEditor>();
@@ -29,25 +29,25 @@ namespace Code.LevelEditor.Editor
         [ShowIf(nameof(SelectedLevelEditor))]
         public BaseLevelDataEditor SelectedLevelEditor;
         
-        [BoxGroup("🟩 Create Level")]
+        [BoxGroup("Create Level")]
         [GUIColor(0.8f, 1f, 0.8f)]
         public int NewIndexLevel = 1;
-        [BoxGroup("🟩 Create Level", centerLabel: true)]
+        [BoxGroup("Create Level", centerLabel: true)]
         [GUIColor(0.8f, 1f, 0.8f)]
         public string NewLevelName = "NewLevel";
-        [BoxGroup("🟩 Create Level")]
+        [BoxGroup("Create Level")]
         [GUIColor(0.8f, 1f, 0.8f)]
         public int NewLevelWidth = 5;
-        [BoxGroup("🟩 Create Level")]
+        [BoxGroup("Create Level")]
         [GUIColor(0.8f, 1f, 0.8f)]
         public int NewLevelHeight = 5;
-        [BoxGroup("🟩 Create Level")]
+        [BoxGroup("Create Level")]
         [GUIColor(0.6f, 1f, 0.6f)]
         [EnumToggleButtons]
         public LevelType SelectedLevelType;
-        [BoxGroup("🟩 Create Level")]
+        [BoxGroup("Create Level")]
         [GUIColor(0.2f, 0.8f, 0.2f)]
-        [Button("🚀 Create Level Editor", ButtonSizes.Large)]
+        [Button("Create Level Editor", ButtonSizes.Large)]
         
         private void CreateNewLevelEditor()
         {
@@ -79,7 +79,8 @@ namespace Code.LevelEditor.Editor
                 newEditor = hexEditor;
             }
 
-            if (newEditor == null) return;
+            if (newEditor == null) 
+                return;
 
             string folderPath = "Assets/Resources/StaticData/LevelsData";
             if (!AssetDatabase.IsValidFolder(folderPath))
@@ -90,7 +91,7 @@ namespace Code.LevelEditor.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"✅ Created new level editor: {assetPath}");
+            Debug.Log($"Created new level editor: {assetPath}");
 
             LoadLevelEditors();
             SelectedLevelEditor = newEditor;
@@ -125,7 +126,7 @@ namespace Code.LevelEditor.Editor
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
 
-                    Debug.Log($"🗑 Deleted level: {path}");
+                    Debug.Log($"Deleted level: {path}");
                 }
                 
                 LoadLevelEditors();

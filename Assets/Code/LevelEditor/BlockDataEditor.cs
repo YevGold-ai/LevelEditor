@@ -41,28 +41,17 @@ namespace Code.LevelEditor
             prefab = newPrefab;
         }
 
-        public override string ToString()
-        {
-            return string.IsNullOrEmpty(id) ? "Unnamed Block" : id;
-        }
+        public override string ToString() => string.IsNullOrEmpty(id) ? "Unnamed Block" : id;
 
-        public override bool Equals(object obj)
-        {
-            return obj is BlockDataEditor other && id == other.id;
-        }
+        public override bool Equals(object obj) => obj is BlockDataEditor other && id == other.id;
 
-        public override int GetHashCode()
-        {
-            return id != null ? id.GetHashCode() : 0;
-        }
+        public override int GetHashCode() => id != null ? id.GetHashCode() : 0;
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
             if (!string.IsNullOrEmpty(id))
-            {
                 SetID(id);
-            }
         }
 #endif
     }

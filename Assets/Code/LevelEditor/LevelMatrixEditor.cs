@@ -48,10 +48,12 @@ namespace Code.LevelEditor
 
         private void LoadLibrary()
         {
-            if (cachedLibrary != null) return;
+            if (cachedLibrary != null) 
+                return;
 
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:BlockLibrary");
-            if (guids.Length == 0) return;
+            if (guids.Length == 0) 
+                return;
 
             string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
             cachedLibrary = UnityEditor.AssetDatabase.LoadAssetAtPath<BlockLibrary>(path);
@@ -158,7 +160,8 @@ namespace Code.LevelEditor
 
         private void ShowContextMenu(LevelCell cell, int x, int y)
         {
-            if (cachedLibrary == null) return;
+            if (cachedLibrary == null) 
+                return;
 
             Vector2 screenPos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
             Vector2 windowSize = new Vector2(350, 550);
@@ -166,9 +169,7 @@ namespace Code.LevelEditor
 
             Vector2Int clickedPos = new Vector2Int(x, y);
             if (currentSelection == null || !currentSelection.Contains(clickedPos))
-            {
                 currentSelection = new List<Vector2Int> { clickedPos };
-            }
 
             BlockPopupWindow.LevelEditorHelpers.TryGetCell = pos => GetCell(pos);
 
@@ -262,8 +263,10 @@ namespace Code.LevelEditor
 
         private void ResizeGrid()
         {
-            if (width <= 0) width = 1;
-            if (height <= 0) height = 1;
+            if (width <= 0) 
+                width = 1;
+            if (height <= 0) 
+                height = 1;
 
             var newGrid = new LevelCell[width, height];
 

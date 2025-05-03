@@ -7,6 +7,6 @@ namespace Code.LevelEditor
     public class LevelCell
     {
         public BlockDataEditor Block;
-        [SerializeField] public Quaternion Rotation = Quaternion.identity;
+        public Quaternion Rotation = Quaternion.identity;
     }
 }

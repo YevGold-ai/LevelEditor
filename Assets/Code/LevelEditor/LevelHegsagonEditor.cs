@@ -149,9 +149,7 @@ namespace Code.LevelEditor
         private void DrawSelectionOverlay(Rect rect, int x, int y)
         {
             if (_currentSelection.Contains(new Vector2Int(x, y)))
-            {
                 EditorGUI.DrawRect(rect, new Color(0f, 1f, 0f, 0.25f));
-            }
         }
 
         private void HandleCellInteraction(Rect rect, int x, int y)
@@ -273,7 +271,7 @@ namespace Code.LevelEditor
         private void MarkDirty()
         {
             GUI.changed = true;
-            UnityEditor.EditorUtility.SetDirty(this);
+            EditorUtility.SetDirty(this);
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
 

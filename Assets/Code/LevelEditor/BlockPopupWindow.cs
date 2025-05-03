@@ -1,9 +1,9 @@
 #if UNITY_EDITOR
-using UnityEditor;
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 namespace Code.LevelEditor
 {
@@ -160,7 +160,8 @@ namespace Code.LevelEditor
         private void DrawSelectedCellsList()
         {
             _showSelectionList = EditorGUILayout.Foldout(_showSelectionList, "\U0001f7e9 Selected Cells Details", true);
-            if (!_showSelectionList) return;
+            if (!_showSelectionList) 
+                return;
 
             _searchFilter = EditorGUILayout.TextField("Search", _searchFilter);
 
@@ -184,7 +185,7 @@ namespace Code.LevelEditor
                         if (cell.Block?.Icon != null)
                             GUILayout.Label(cell.Block.Icon.texture, GUILayout.Width(32), GUILayout.Height(32));
                         else
-                            GUILayout.Label("❌", GUILayout.Width(32), GUILayout.Height(32));
+                            GUILayout.Label("-", GUILayout.Width(32), GUILayout.Height(32));
 
                         EditorGUILayout.LabelField(label);
                         EditorGUILayout.EndHorizontal();
@@ -199,20 +200,23 @@ namespace Code.LevelEditor
         private void DrawRotationButtons()
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("↑\n0°")) _onRotationSelected?.Invoke(0);
-            if (GUILayout.Button("→\n90°")) _onRotationSelected?.Invoke(90);
-            if (GUILayout.Button("↓\n180°")) _onRotationSelected?.Invoke(180);
-            if (GUILayout.Button("←\n270°")) _onRotationSelected?.Invoke(270);
+            if (GUILayout.Button("↑\n0°"))
+                _onRotationSelected?.Invoke(0);
+            if (GUILayout.Button("→\n90°")) 
+                _onRotationSelected?.Invoke(90);
+            if (GUILayout.Button("↓\n180°")) 
+                _onRotationSelected?.Invoke(180);
+            if (GUILayout.Button("←\n270°")) 
+                _onRotationSelected?.Invoke(270);
             GUILayout.EndHorizontal();
         }
 
         private void DrawCopyPasteButtons()
         {
             GUILayout.BeginHorizontal();
-
-            // КНОПКА КОПИРОВАНИЯ
+            
             GUI.backgroundColor = new Color(0.8f, 0.8f, 1f);
-            if (GUILayout.Button("📋 Copy", GUILayout.Height(25)))
+            if (GUILayout.Button("Copy", GUILayout.Height(25)))
             {
                 _copiedCells.Clear();
 
@@ -231,25 +235,24 @@ namespace Code.LevelEditor
                         }
                     }
 
-                    Debug.Log($"📋 Copied {_copiedCells.Count} cells");
+                    Debug.Log($"Copied {_copiedCells.Count} cells");
                 }
                 else
                 {
-                    Debug.LogWarning("❌ No cells selected to copy.");
+                    Debug.LogWarning("No cells selected to copy.");
                 }
             }
-
-            // КНОПКА ВСТАВКИ
+            
             GUI.backgroundColor = new Color(0.7f, 1f, 0.7f);
-            if (GUILayout.Button("📌 Paste", GUILayout.Height(25)))
+            if (GUILayout.Button("Paste", GUILayout.Height(25)))
             {
                 if (_copiedCells == null || _copiedCells.Count == 0)
                 {
-                    Debug.LogWarning("❌ Nothing copied to paste.");
+                    Debug.LogWarning("Nothing copied to paste.");
                 }
                 else if (_currentSelection == null || _currentSelection.Count == 0)
                 {
-                    Debug.LogWarning("❌ No cells selected to paste into.");
+                    Debug.LogWarning("No cells selected to paste into.");
                 }
                 else
                 {
@@ -272,7 +275,7 @@ namespace Code.LevelEditor
                         }
                     }
 
-                    Debug.Log($"📌 Pasted {pasteCount} cells starting from [{firstTarget.x},{firstTarget.y}]");
+                    Debug.Log($"Pasted {pasteCount} cells starting from [{firstTarget.x},{firstTarget.y}]");
                 }
             }
 
@@ -284,9 +287,7 @@ namespace Code.LevelEditor
         {
             GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
             if (GUILayout.Button("🗑 Clear Block(s)", GUILayout.Height(30)))
-            {
                 _onClear?.Invoke();
-            }
 
             GUI.backgroundColor = Color.white;
         }
