@@ -29,7 +29,7 @@ A powerful, fully customized level editor made in Unity using Odin Inspector. Bu
 ### 🎥 GIF Showcase
 <table> <tr> <th>Block Library</th> <th>Level Editor</th> <th>Popup Menu</th> </tr> <tr> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/2.gif" width="450"/></td> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/1.gif" width="450"/></td> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/5.gif" width="450"/></td> </tr> <tr> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/4.gif" width="450"/></td> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/3.gif" width="450"/></td> <td><img src="https://github.com/SinlessDevil/Grid_Level_Editor/blob/main/Gifs/6.gif" width="450"/></td> </tr> </table>
 
-###🔧 Technologies Used
+### 🔧 Technologies Used
 - Unity 2022+
 - Odin Inspector
 - DOTween
